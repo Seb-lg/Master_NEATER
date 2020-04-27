@@ -6,8 +6,15 @@
 #define MASTER_NEATER_NODE_HPP
 
 
-class Node {
+#include <cstddef>
 
+class Node {
+public:
+	Node(size_t ID, float activated);
+
+public:
+	float activated;
+	size_t ID;
 };
 
 

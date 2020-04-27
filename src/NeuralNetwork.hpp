@@ -8,6 +8,9 @@
 
 #include <cstddef>
 #include <vector>
+#include <list>
+#include <queue>
+#include <memory>
 
 #include "Zone.hpp"
 
@@ -17,9 +20,25 @@ public:
 	NeuralNetwork(size_t input, size_t output);
 	NeuralNetwork(std::vector<std::vector<float>> &input, std::vector<std::vector<float>> &output);
 
+	void initInOut(size_t input, size_t output);
+
+	std::shared_ptr<Node> createNode(float activated = 0.0f);
+	std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
+	void setInput(std::vector<float> input);
+
 public:
-	std::vector<std::vector<float>> inputs;
-	std::vector<std::vector<float>> outputs;
+	std::vector<std::shared_ptr<Node>> inputs;
+	std::vector<std::shared_ptr<Node>> outputs;
+
+	std::list<std::shared_ptr<Zone>>  zones;
+
+	std::queue<std::shared_ptr<Node>> toProcess;
+
+	std::list<std::shared_ptr<Node>> _nodes;
+	std::list<std::shared_ptr<Connection>> _connections;
+
+	std::vector<std::vector<float>> _inCloseness;
+	std::vector<std::vector<float>> _outCloseness;
 };
 
 
