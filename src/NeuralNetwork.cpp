@@ -6,7 +6,7 @@
 #include "NeuralNetwork.hpp"
 #include "../include/Helper.hpp"
 
-NeuralNetwork::NeuralNetwork(size_t input, size_t output) {
+NeuralNetwork::NeuralNetwork(size_t input, size_t output, size_t brainCycle): brainCycle(brainCycle) {
 	initInOut(input, output);
 }
 
@@ -33,6 +33,20 @@ void NeuralNetwork::initInOut(size_t input, size_t output) {
 		this->outputs.emplace_back(createNode());
 }
 
+void NeuralNetwork::update() {
+    for(size_t loop = 0; loop < this->brainCycle && !toProcess.empty(); ++loop) {
+        auto tmp = toProcess.size();
+        for (size_t i = 0; i < tmp; ++i) {
+            auto poped = toProcess.front();
+            toProcess.pop();
+
+            poped->activate();
+            for (auto const &elem : poped->connectionTo)
+                toProcess.push(elem->to);
+        }
+    }
+}
+
 std::shared_ptr<Node> NeuralNetwork::createNode(float activated) {
 	static size_t id = 0;
 	auto tmp = std::make_shared<Node>(id, activated);id++;
@@ -41,8 +55,15 @@ std::shared_ptr<Node> NeuralNetwork::createNode(float activated) {
 }
 
 std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to) {
-	auto tmp = std::make_shared<Connection>();
+    static size_t id = 0;
+    auto tmp = std::make_shared<Connection>(id);id++;
 	this->_connections.emplace_back(tmp);
+
+	from->connectionTo.push_back(tmp);
+	to->connectionFrom.push_back(tmp);
+	tmp->from = from;
+	tmp->to = to;
+
 	return tmp;
 }
 
@@ -53,5 +74,6 @@ void NeuralNetwork::setInput(std::vector<float> input) {
 	auto size = (input.size() < this->inputs.size()? input.size(): this->inputs.size());
 	for (size_t i = 0; i < size; ++i) {
 		this->inputs[i]->activated = input[i];
+		this->toProcess.push(this->inputs[i]);
 	}
 }

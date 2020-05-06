@@ -10,6 +10,7 @@ int main(int ac, char** av) {
 	NeuralNetwork ann(oui, non);
 
 	ann.setInput({0, 2});
+	ann.update();
 
 	return 0;
 }
