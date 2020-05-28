@@ -2,6 +2,10 @@
 // Created by seb on 27/04/2020.
 //
 
+#include <fstream>
+#include <include/Helper.hpp>
+#include <fcntl.h>
+#include <zconf.h>
 #include "src/NeuralNetwork.hpp"
 
 int main(int ac, char** av) {
@@ -26,10 +30,18 @@ int main(int ac, char** av) {
 
 	NeuralNetwork ann(input, output);
 
-	ann.setInput({0, 2});
+	ann.setInput({0, 2, 8, 1, 5, 7, 4, 5, 7, 4});
 	ann.update();
 
+    std::cout << "lebilmboquet " << 4 << std::endl;
+    auto fin = open(FIFO_IN, O_RDONLY);
+    std::cout << "lebilmboquet " << 4 << std::endl;
+    auto fout = open(FIFO_OUT, O_WRONLY);
 
+    std::cout << "lebilmboquet " << fin << std::endl;
+    char oui[80];
+    read(fin, &oui, 80);
+    std::cout << "in " << oui << std::endl;
 
 	return 0;
 }

@@ -12,4 +12,7 @@
 
 #define ACTIVATION(x) ((1 / (1 + exp(-2 * x))) * 2 - 1)
 
+#define FIFO_IN "Arcade-Learning-Environment/ale_fifo_out"
+#define FIFO_OUT "Arcade-Learning-Environment/ale_fifo_in"
+
 #endif //MASTER_NEATER_HELPER_HPP
