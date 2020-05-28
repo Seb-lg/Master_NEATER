@@ -5,12 +5,31 @@
 #include "src/NeuralNetwork.hpp"
 
 int main(int ac, char** av) {
-	std::vector<std::vector<float>> oui = {{1, 2, 5, 4}, {1, 2, 5, 4}};
-	std::vector<std::vector<float>> non = {{2, 5, 4}};
-	NeuralNetwork ann(oui, non);
+    decltype(NeuralNetwork::_inCloseness) input;
+    decltype(NeuralNetwork::_outCloseness) output;
+
+    input.resize(10);
+    for (int i = 0; i < 10; ++i) {
+        int a = rand()%10;
+        input[i].reserve(a);
+        for (int y = 0; y < a; ++y)
+            input[i].emplace_back(rand() % 10, (rand() % 1000)/ 100.0f);
+    }
+
+    output.resize(5);
+    for (int i = 0; i < 5; ++i) {
+        int a = rand()%5;
+        output[i].reserve(a);
+        for (int y = 0; y < a; ++y)
+            output[i].emplace_back(rand() % 5, (rand() % 1000)/ 100.0f);
+    }
+
+	NeuralNetwork ann(input, output);
 
 	ann.setInput({0, 2});
 	ann.update();
+
+
 
 	return 0;
 }

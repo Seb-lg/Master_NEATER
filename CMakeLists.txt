@@ -15,4 +15,4 @@ add_executable(Master_NEATER
         src/NeuralNetwork.hpp
         src/Zone.cpp
         src/Zone.hpp
-        include/Helper.hpp)
+        include/Helper.hpp src/IOANN.hpp)
