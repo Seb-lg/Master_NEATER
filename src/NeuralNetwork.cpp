@@ -3,10 +3,11 @@
 //
 
 #include <algorithm>
+#include <random>
 #include "NeuralNetwork.hpp"
 #include "../include/Helper.hpp"
 
-NeuralNetwork::NeuralNetwork(size_t input, size_t output, size_t brainCycle): brainCycle(brainCycle) {
+NeuralNetwork::NeuralNetwork(size_t input, size_t output, size_t brainCycle): fitness(0), brainCycle(brainCycle) {
 	initInOut(input, output);
 }
 
@@ -47,6 +48,28 @@ void NeuralNetwork::update() {
                 toProcess.push(elem->to);
         }
     }
+}
+
+void NeuralNetwork::setInput(std::vector<float> input) {
+    if (input.size() != this->inputs.size()){
+        std::cout << WARNING((input.size() > this->inputs.size()? "Too much Input Data" : "Not enough Input data")) << INFO(" NeuralNetwork::setInput") << " --> Got:" << input.size() << " Expected:" << this->inputs.size() << std::endl;
+    }
+
+    auto size = (input.size() < this->inputs.size()? input.size(): this->inputs.size());
+    for (size_t i = 0; i < size; ++i) {
+        this->inputs[i]->activated = input[i];
+        this->toProcess.push(this->inputs[i]);
+    }
+}
+
+std::vector<float> NeuralNetwork::getOutput() {
+    std::vector<float> out(this->outputs.size());
+    auto it = out.begin();
+    for (auto const &elem: this->outputs) {
+        *it = elem->activated;
+        ++it;
+    }
+    return out;
 }
 
 void NeuralNetwork::crossover(const NeuralNetwork &parent) {
@@ -100,6 +123,85 @@ void NeuralNetwork::crossover(const NeuralNetwork &parent1, const NeuralNetwork 
         toProcess.pop();
 }
 
+void NeuralNetwork::mutation() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 8);
+
+    switch (dis(gen)) {
+        case 0:	/// New Connection
+		{
+			std::shared_ptr<Node> a;
+			std::shared_ptr<Node> b;
+			std::uniform_int_distribution<> size(0, _nodes.size() - 1);
+			while (true) {
+				int tmp = size(gen);
+				a = std::next(_nodes.begin(), tmp)->second;
+				tmp = size(gen);
+				b = std::next(_nodes.begin(), tmp)->second;
+				while (a == b || std::find(inputs.begin(), inputs.end(), b) == inputs.end()) {
+					tmp = size(gen);
+					b = std::next(_nodes.begin(), tmp)->second;
+				}
+
+				bool exist = false;
+				for (auto const & elem: a->connectionTo)
+					if (elem->to == b)
+						exist = true;
+				if (a != b && !exist)
+					break;
+			}
+			createConnection(a, b);
+		}
+			break;
+		case 1:	/// New Node
+			if (_connections.size() == 0)
+				break;
+		{
+			std::uniform_int_distribution<> size(0, _connections.size() - 1);
+			int tmp = size(gen);
+			createNode(std::next(_connections.begin(), tmp)->second);
+		}
+			break;
+        case 2:	/// (De)Activate Connection
+			if (_connections.size() == 0)
+				break;
+		{
+			std::uniform_int_distribution<> size(0, _connections.size() - 1);
+			int tmp = size(gen);
+			std::next(_connections.begin(), tmp)->second->status = false;
+		}
+			break;
+        case 3:	/// Randomise Weight
+			if (_connections.size() == 0)
+				break;
+		{
+			std::uniform_int_distribution<> size(0, _connections.size() - 1);
+			std::uniform_real_distribution<float> weight(-WEIGHT, WEIGHT);
+			int tmp = size(gen);
+			std::next(_connections.begin(), tmp)->second->weight = weight(gen);
+		}
+			break;
+        case 4:	/// Tune Weight
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+			if (_connections.size() == 0)
+				break;
+		{
+			std::uniform_int_distribution<> size(0, _connections.size() - 1);
+			std::uniform_real_distribution<float> weight(-WEIGHT_TUNE, WEIGHT_TUNE);
+			int tmp = size(gen);
+			tmp = size(gen);
+			std::next(_connections.begin(), tmp)->second->weight += weight(gen);
+		}
+			break;
+		default:
+			std::cout << ERROR("Out of bound") << ": " << INFO("NeuralNetwork::mutation") << std::endl;
+    }
+}
+
 std::shared_ptr<Node> NeuralNetwork::createNode(float activated) {
 	static size_t id = 0;
 	auto tmp = std::make_shared<Node>(id, activated);
@@ -134,15 +236,4 @@ std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node
 	return tmp;
 }
 
-void NeuralNetwork::setInput(std::vector<float> input) {
-	if (input.size() != this->inputs.size()){
-		std::cout << WARNING((input.size() > this->inputs.size()? "Too much Input Data" : "Not enough Input data")) << INFO(" NeuralNetwork::setInput") << " --> Got:" << input.size() << " Expected:" << this->inputs.size() << std::endl;
-	}
-
-	auto size = (input.size() < this->inputs.size()? input.size(): this->inputs.size());
-	for (size_t i = 0; i < size; ++i) {
-		this->inputs[i]->activated = input[i];
-		this->toProcess.push(this->inputs[i]);
-	}
-}
 

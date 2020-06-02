@@ -9,24 +9,29 @@
 #include <sstream>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 
 class ALEWrapper {
 public:
-    ALEWrapper();
+    explicit ALEWrapper(bool graphical = false);
+    ~ALEWrapper();
 
     std::vector<float> const &getData();
     void sendAction(std::vector<float>);
+    bool isTerminal();
 
 public:
-    FILE* fin;
-    FILE* fout;
+    int fin[2]{};
+    int fout[2]{};
 
-    int width;
-    int height;
+    int width{};
+    int height{};
 
-    char buffer[204800];
+    char buffer[204800]{};
     std::vector<float> out;
+    int id;
+    bool terminal;
+    int fitness;
 };
 
 

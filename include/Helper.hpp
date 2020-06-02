@@ -12,10 +12,23 @@
 
 #define ACTIVATION(x) ((1 / (1 + exp(-2 * x))) * 2 - 1)
 
+#define WEIGHT 2
+#define WEIGHT_TUNE 1
+#define ELITE 20
+
+#define TEST_POPULATION 100
+#define NBTHREAD 6
+
 #define CtoI(x) ((float)(x >= '0' && x <= '9'? x - 48 : x - 55))
 
 #define FIFO_IN "Arcade-Learning-Environment/ale_fifo_out"
 #define FIFO_OUT "Arcade-Learning-Environment/ale_fifo_in"
+
+#define ALE "./Arcade-Learning-Environment/ale"
+#define MAX_FRAME "10000"
+char * const ALE_NonGraphic [] = {ALE, "-game_controller", "fifo", "-max_num_frames", MAX_FRAME, "Arcade-Learning-Environment/roms/space_invaders.bin"};
+char * const ALE_Graphic[] = {ALE, "-game_controller", "fifo", "-max_num_frames", MAX_FRAME, "-display_screen", "true", "Arcade-Learning-Environment/roms/space_invaders.bin"};
+char * const ALE_GraphicSound[] = {ALE, "-game_controller", "fifo", "-max_num_frames", MAX_FRAME, "-display_screen", "true", "-sound", "true", "Arcade-Learning-Environment/roms/space_invaders.bin"};
 
 enum class Action {
     PLAYER_A_NOOP           = 0,

@@ -24,16 +24,21 @@ public:
 
 	void initInOut(size_t input, size_t output);
 	void update();
+    void setInput(std::vector<float> input);
+    std::vector<float> getOutput();
 
-	void crossover(NeuralNetwork const &parent);
+    void crossover(NeuralNetwork const &parent);
 	void crossover(NeuralNetwork const &parent1, NeuralNetwork const &parent2);
 
-	std::shared_ptr<Node> createNode(float activated = 0.0f);
-	std::shared_ptr<Node> createNode(std::shared_ptr<Connection> &toSplit);
-	std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
-	void setInput(std::vector<float> input);
+	virtual void mutation();
+
+    std::shared_ptr<Node> createNode(float activated = 0.0f);
+    std::shared_ptr<Node> createNode(std::shared_ptr<Connection> &toSplit);
+    std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
 
 public:
+	int fitness;
+
 	std::vector<std::shared_ptr<Node>> inputs;
 	std::vector<std::shared_ptr<Node>> outputs;
 	size_t brainCycle;
