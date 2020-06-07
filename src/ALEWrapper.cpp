@@ -48,7 +48,7 @@ ALEWrapper::ALEWrapper(bool graphical): terminal(false) {
 ALEWrapper::~ALEWrapper() {
     close(fin[0]);
     close(fout[1]);
-    kill(id, SIGTERM);
+    kill(id, SIGKILL);
 }
 
 std::vector<float> const &ALEWrapper::getData() {
@@ -72,7 +72,7 @@ std::vector<float> const &ALEWrapper::getData() {
     for (auto &elem : out) {
         elem = (CtoI(tmp[0]) * 16.f + CtoI(tmp[1])) / 255.0f;
         tmp += 2;
-    }
+	}
 	if (end[0] == '1')
     	terminal = true;
     fitness = std::stoi(tmpfitness);
@@ -96,4 +96,9 @@ void ALEWrapper::sendAction(std::vector<float> actions) {
 
 bool ALEWrapper::isTerminal() {
     return terminal;
+}
+
+void ALEWrapper::killExcess() {
+	char * const params [] = {"killall", "-s", "SIGKILL", "ale"};
+	execvp("killall", params);
 }

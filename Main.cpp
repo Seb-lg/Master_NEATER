@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <random>
 #include <thread>
+#include <src/SnakeWrapper.hpp>
+#include <climits>
+#include <src/Graphical/Graphical.hpp>
 #include "include/Helper.hpp"
 #include "src/NeuralNetwork.hpp"
 
@@ -40,47 +43,64 @@ int main(int ac, char** av) {
     std::vector<std::shared_ptr<NeuralNetwork>> generation;
     generation.reserve(TEST_POPULATION);
     for (int i = 0; i < TEST_POPULATION; ++i)
-    	generation.emplace_back(std::make_shared<NeuralNetwork>(input, output));
+    	generation.emplace_back(std::make_shared<NeuralNetwork>(8*3, 4));
 
-    while(true) {
+	int epoch = 0;
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, TEST_POPULATION * (ELITE / 100.0));
+	std::uniform_int_distribution<ulong> seedGen(0, ULONG_MAX);
+
+	Graphical graphical(50, 750);
+	while(true) {
 		/// Replace the younglings and mutate
-		static std::random_device rd;
-		static std::mt19937 gen(rd());
-		static std::uniform_int_distribution<> dis(0, TEST_POPULATION * (ELITE / 100.0));
-		for (int i = TEST_POPULATION * (ELITE / 100.0); i < TEST_POPULATION; ++i) {
+		for (int i = TEST_POPULATION * (ELITE / 100.0) + 1; i < TEST_POPULATION; ++i) {
 			generation[i]->crossover(*generation[dis(gen)], *generation[dis(gen)]);
 			generation[i]->mutation();
 		}
 
 		/// Determine fitness
 		std::vector<std::thread> workers;
+		ulong seed = seedGen(gen);
 		for (int i = 0; i < TEST_POPULATION; ++i) {
-			if (i % (NBTHREAD + 1) == 0) {
+			if (i % NBTHREAD == 0) {
 				if (!workers.empty()) {
 					for (auto &elem : workers)
 						elem.join();
 					workers.clear();
 				}
-				workers.reserve(TEST_POPULATION);
+				workers.reserve(NBTHREAD);
 			}
-			workers.emplace_back([elem = generation[i], i]() {
-				ALEWrapper ale(i % (NBTHREAD + 1) == 0);
-
-				while (!ale.isTerminal()) {
-					elem->setInput(ale.getData());
+			workers.emplace_back([&elem = generation[i], i, seed]() {
+				SnakeWrapper ale(50, 50, seed, false);
+				elem->fitness = -1;
+				while (elem->fitness == -1) {
+					auto data = ale.getData();
+					elem->setInput(data);
 					elem->update();
-					ale.sendAction(elem->getOutput());
-					elem->fitness = ale.fitness;
+					elem->fitness = ale.sendAction(elem->getOutput());
 				}
 			});
 		}
 		for (auto &worker : workers)
 			worker.join();
 
+
 		/// Sort the population by fitness
 		std::sort(generation.begin(), generation.end(), [](std::shared_ptr<NeuralNetwork> const&a, std::shared_ptr<NeuralNetwork> const&b){return a->fitness > b->fitness;});
-		std::cout << INFO("Fitness: ") << generation[0]->fitness  << '\r';
-
+		SnakeWrapper ale(50, 50, seed, false);
+		generation[0]->fitness = -1;
+		while (generation[0]->fitness == -1) {
+			auto data = ale.getData();
+			generation[0]->setInput(data);
+			generation[0]->update();
+			generation[0]->fitness = ale.sendAction(generation[0]->getOutput());
+			graphical.draw(ale.map, ale.width);
+			graphical.update();
+			std::this_thread::sleep_for(std::chrono::microseconds(100000));//16666));
+		}
+		std::cout << INFO("Generation ") << epoch << INFO(" fitness: ") << generation[0]->fitness << "<--" << generation[TEST_POPULATION - 1]->fitness  << std::endl;
+		++epoch;
     }
 
 

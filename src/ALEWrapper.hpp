@@ -20,6 +20,8 @@ public:
     void sendAction(std::vector<float>);
     bool isTerminal();
 
+    static void killExcess();
+
 public:
     int fin[2]{};
     int fout[2]{};

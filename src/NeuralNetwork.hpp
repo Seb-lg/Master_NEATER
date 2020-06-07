@@ -31,13 +31,20 @@ public:
 	void crossover(NeuralNetwork const &parent1, NeuralNetwork const &parent2);
 
 	virtual void mutation();
+	void mutationNode();
+	void mutationConnection();
+	void mutationConnectionStatus();
+	void mutationWeight();
+	void mutationTotalWeight();
 
     std::shared_ptr<Node> createNode(float activated = 0.0f);
+    std::shared_ptr<Node> createNoIDNode(int id);
     std::shared_ptr<Node> createNode(std::shared_ptr<Connection> &toSplit);
     std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
+    std::shared_ptr<Connection> createNoIDConnection(int id, std::shared_ptr<Node> from, std::shared_ptr<Node> to);
 
 public:
-	int fitness;
+	float fitness;
 
 	std::vector<std::shared_ptr<Node>> inputs;
 	std::vector<std::shared_ptr<Node>> outputs;
@@ -45,13 +52,16 @@ public:
 
 	std::vector<std::shared_ptr<Zone>>  zones;
 
-	std::queue<std::shared_ptr<Node>> toProcess;
+	std::list<std::shared_ptr<Node>> toProcess;
 
 	std::map<int, std::shared_ptr<Node>> _nodes;
 	std::map<int, std::shared_ptr<Connection>> _connections;
 
 	std::vector<std::vector<Input>> _inCloseness;
 	std::vector<std::vector<Output>> _outCloseness;
+
+	std::random_device rd;
+	std::mt19937 gen;
 };
 
 

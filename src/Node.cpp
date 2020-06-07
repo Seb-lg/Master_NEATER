@@ -12,10 +12,11 @@ Node::Node(size_t ID, float activated): ID(ID), activated(activated), dontActiva
 void Node::activate() {
     if (dontActivate)
         return;
-    value = 0;
+    value = 0.0f;
     for(auto const & elem : connectionFrom) {
-        if (elem->status)
-            value += elem->from->activated * elem->weight;
-    }
-    activated = ACTIVATION(value);
+        if (elem->status) {
+			value += elem->from->activated * elem->weight;
+		}
+	}
+	activated = ACTIVATION(value);
 }
