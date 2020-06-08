@@ -10,11 +10,16 @@ SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph): map(w
 	gen = std::mt19937(seed);
 	dis = std::uniform_int_distribution<int>(0, width * height);
 
-	snake.emplace_front(0);
-	map[0] = 'S';
+	int tmp = dis(gen);
+	tmp = (tmp <= 2? 2: (tmp > width * height - 3 ? tmp - 3: tmp));
+	snake.emplace_front(tmp);
+	snake.emplace_back(tmp+1);
+	snake.emplace_back(tmp+2);
+	for (auto const &elem : snake)
+		map[elem] = 'S';
 	newApple();
-	food = FOOD_BASE;
-	size = 1;
+	food = width * 2;
+	size = 3;
 }
 
 float SnakeWrapper::sendAction(std::vector<float> inputs) {
@@ -48,14 +53,13 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 
 	--food;
 	if (map[x + y * width] == 'A') {
-		fitness += APPLE_REWARD;
 		snake.emplace_back(-1);
 		food += FOOD_REWARD;
 		newApple();
 		++size;
 	}
 	else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0)
-		return (float)size + log((float)fitness/100.0f);
+		return (float)size + log((float)fitness / 100.f);
 
 	fitness += LIVING_REWARD;
 

@@ -50,10 +50,6 @@ void NeuralNetwork::update() {
             toProcess.pop_front();
 
 			poped->activate();
-//			if (poped->activated != 0.0f && std::find(inputs.begin(), inputs.end(), poped) == inputs.end()) {
-//			if (std::find(inputs.begin(), inputs.end(), poped) != inputs.end())
-//				std::cout << "PARCE QUE C EST NOTRE PROJET !" << poped->activated << std::endl;
-//			}
 
             for (auto const &elem : poped->connectionTo)
             	if (std::find(toProcess.begin(), toProcess.end(), elem->to) == toProcess.end())
@@ -86,50 +82,50 @@ std::vector<float> NeuralNetwork::getOutput() {
     return out;
 }
 
-void NeuralNetwork::crossover(const NeuralNetwork &parent) {
+void NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent) {
     this->_nodes.clear();
-    for (auto const &elem: parent._nodes)
+    for (auto const &elem: parent->_nodes)
         this->_nodes.emplace(elem.first, createNoIDNode(elem.first));
     this->_connections.clear();
-    for (auto const &elem: parent._connections) {
+    for (auto const &elem: parent->_connections) {
         this->_connections.emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
         this->_connections[elem.first]->status = elem.second->status;
         this->_connections[elem.first]->weight = elem.second->weight;
     }
 
     this->inputs.clear();
-    for (auto const &elem: parent.inputs)
+    for (auto const &elem: parent->inputs)
         inputs.emplace_back(this->_nodes[elem->ID]);
     this->outputs.clear();
-    for (auto const &elem: parent.outputs)
+    for (auto const &elem: parent->outputs)
         outputs.emplace_back(this->_nodes[elem->ID]);
 
     toProcess.clear();
 }
 
-void NeuralNetwork::crossover(const NeuralNetwork &parent1, const NeuralNetwork &parent2) {
+void NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent1, const std::shared_ptr<NeuralNetwork> &parent2) {
     this->_nodes.clear();
-    for (auto const &elem: parent1._nodes)
+    for (auto const &elem: parent1->_nodes)
         this->_nodes.emplace(elem.first, createNoIDNode(elem.first));
-    for (auto const &elem: parent2._nodes)
+    for (auto const &elem: parent2->_nodes)
         this->_nodes.try_emplace(elem.first, createNoIDNode(elem.first));
     this->_connections.clear();
-    for (auto const &elem: parent1._connections) {
+    for (auto const &elem: parent1->_connections) {
         this->_connections.emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
         this->_connections[elem.first]->status = elem.second->status;
         this->_connections[elem.first]->weight = elem.second->weight;
     }
-    for (auto const &elem: parent2._connections) {
+    for (auto const &elem: parent2->_connections) {
         this->_connections.try_emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
         this->_connections[elem.first]->status = elem.second->status;
         this->_connections[elem.first]->weight = elem.second->weight;
     }
 
     this->inputs.clear();
-    for (auto const &elem: parent1.inputs)
+    for (auto const &elem: parent1->inputs)
         inputs.emplace_back(this->_nodes[elem->ID]);
     this->outputs.clear();
-    for (auto const &elem: parent1.outputs)
+    for (auto const &elem: parent1->outputs)
         outputs.emplace_back(this->_nodes[elem->ID]);
 
     toProcess.clear();
@@ -140,19 +136,19 @@ void NeuralNetwork::mutation() {
     std::uniform_real_distribution<float> prct(0.0, 1.0);
 
     for (int i = 0; i < MUT_NODE; ++i)
-    	if (prct(gen) < MUT_NODE_VALUE)
+    	if (prct(gen) > MUT_NODE_VALUE)
 			mutationNode();
 	for (int i = 0; i < MUT_CONNECTION; ++i)
-    	if (prct(gen) < MUT_CONNECTION_VALUE)
+    	if (prct(gen) > MUT_CONNECTION_VALUE)
 			mutationConnection();
 	for (int i = 0; i < MUT_CONNECTION_STATUS; ++i)
-    	if (prct(gen) < MUT_CONNECTION_STATUS_VALUE)
+    	if (prct(gen) > MUT_CONNECTION_STATUS_VALUE)
 			mutationConnectionStatus();
 	for (int i = 0; i < MUT_WEIGHT; ++i)
-    	if (prct(gen) < MUT_WEIGHT_VALUE)
+    	if (prct(gen) > MUT_WEIGHT_VALUE)
 			mutationWeight();
 	for (int i = 0; i < MUT_TOTAL_WEIGHT; ++i)
-    	if (prct(gen) < MUT_TOTAL_WEIGHT_VALUE)
+    	if (prct(gen) > MUT_TOTAL_WEIGHT_VALUE)
 			mutationTotalWeight();
 }
 
@@ -173,7 +169,7 @@ void NeuralNetwork::mutationConnection() {
 		a = std::next(_nodes.begin(), tmp)->second;
 		tmp = size(gen);
 		b = std::next(_nodes.begin(), tmp)->second;
-		while (a == b || std::find(inputs.begin(), inputs.end(), b) != inputs.end()) {
+		while (a == b or std::find(inputs.begin(), inputs.end(), b) != inputs.end()) {
 			tmp = size(gen);
 			b = std::next(_nodes.begin(), tmp)->second;
 		}

@@ -23,7 +23,7 @@ add_executable(Master_NEATER
         src/SnakeWrapper.cpp
         src/SnakeWrapper.hpp
         src/Graphical/Graphical.cpp
-        src/Graphical/Graphical.hpp)
+        src/Graphical/Graphical.hpp src/Specie.cpp src/Specie.hpp src/Genus.cpp src/Genus.hpp)
 
 #target_link_libraries (Master_NEATER Threads::Threads)
 target_link_libraries(Master_NEATER ${CMAKE_THREAD_LIBS_INIT})

@@ -12,6 +12,7 @@
 #include <queue>
 #include <memory>
 #include <map>
+#include <random>
 
 #include "Zone.hpp"
 #include "IOANN.hpp"
@@ -19,16 +20,16 @@
 class NeuralNetwork {
 public:
 	NeuralNetwork() = delete;
-	NeuralNetwork(size_t input, size_t output, size_t brainCycle = 7);
-	NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output, size_t brainCycle = 7);
+	NeuralNetwork(size_t input, size_t output, size_t brainCycle = 2);
+	NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output, size_t brainCycle = 2);
 
 	void initInOut(size_t input, size_t output);
 	void update();
     void setInput(std::vector<float> input);
     std::vector<float> getOutput();
 
-    void crossover(NeuralNetwork const &parent);
-	void crossover(NeuralNetwork const &parent1, NeuralNetwork const &parent2);
+    void crossover(std::shared_ptr<NeuralNetwork> const &parent);
+	void crossover(std::shared_ptr<NeuralNetwork> const &parent1, std::shared_ptr<NeuralNetwork> const &parent2);
 
 	virtual void mutation();
 	void mutationNode();

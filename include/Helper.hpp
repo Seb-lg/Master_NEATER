@@ -15,21 +15,22 @@
 #define BIAS 4
 #define WEIGHT 2
 #define WEIGHT_TUNE 1
-#define ELITE 8
+#define ELITE 1
 
 
 #define MUT_NODE 1
 #define MUT_CONNECTION 1
-#define MUT_CONNECTION_STATUS 1
+#define MUT_CONNECTION_STATUS 0
 #define MUT_WEIGHT 1
-#define MUT_TOTAL_WEIGHT 1
+#define MUT_TOTAL_WEIGHT 0
 
-#define MUT_NODE_VALUE 0.3
+#define MUT_NODE_VALUE 0.5
 #define MUT_CONNECTION_VALUE 0.2
-#define MUT_CONNECTION_STATUS_VALUE 0.2
-#define MUT_WEIGHT_VALUE 0.5
-#define MUT_TOTAL_WEIGHT_VALUE 0.3
+#define MUT_CONNECTION_STATUS_VALUE 0.01
+#define MUT_WEIGHT_VALUE 0.3
+#define MUT_TOTAL_WEIGHT_VALUE 0.05
 
+#define GRID_SIZE 25
 
 #define APPLE_REWARD 500
 #define LIVING_REWARD 1
@@ -37,6 +38,7 @@
 #define FOOD_BASE 125
 
 #define TEST_POPULATION 2000
+#define SPECIE_SIZE 1000
 #define NBTHREAD 4
 
 #define CtoI(x) ((float)(x >= '0' && x <= '9'? x - 48 : x - 55))

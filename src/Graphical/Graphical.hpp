@@ -13,7 +13,8 @@ public:
 
 	Graphical(int size, int width);
 
-	void draw(std::vector<char> tableau, int width);
+	void drawGround(int width);
+	void draw(std::vector<char> tableau, int width, sf::Color snakeColor);
 
 	void update();
 

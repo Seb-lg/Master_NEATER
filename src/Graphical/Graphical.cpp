@@ -20,18 +20,31 @@ Graphical::Graphical(int size, int width):
 	//circle.setOutlineColor(sf::Color(211,211,211,255));
 }
 
-void Graphical::draw(std::vector<char> tableau, int width) {
+void Graphical::drawGround(int width) {
+	int i;
+
+	i = width / 2 + 3;
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < width; y++) {
+			circle.setFillColor(sf::Color(50, 50, 50, 255));
+			circle.setPosition((i + x) * widthCircle, (y + 1) * widthCircle);
+			window.draw(circle);
+		}
+	}
+}
+
+void Graphical::draw(std::vector<char> tableau, int width, sf::Color snakeColor) {
 	int i;
 
 	i = width / 2 + 3;
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < width; y++) {
 			if (tableau[y*width + x] == 'S')
-				circle.setFillColor(sf::Color::Green);
+				circle.setFillColor(snakeColor);
 			else if (tableau[y*width + x] == 'A')
 				circle.setFillColor(sf::Color::Red);
 			else
-				circle.setFillColor(sf::Color(50, 50, 50, 255));
+				continue;
 			circle.setPosition((i + x) * widthCircle, (y + 1) * widthCircle);
 			window.draw(circle);
 		}
