@@ -15,14 +15,20 @@
 class Specie {
 public:
 	Specie(int input, int output);
+	Specie(std::shared_ptr<NeuralNetwork> ann);
+
 	void evaluateSpecie();
 	void update(ulong seed);
+	void crossover();
+	void mutate();
+	void sort();
 
 public:
 	std::vector<std::shared_ptr<NeuralNetwork>> population;
 	float annValue;
 
 	sf::Color color;
+	float averageFitness;
 };
 
 

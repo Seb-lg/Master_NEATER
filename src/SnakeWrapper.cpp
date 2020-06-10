@@ -59,7 +59,7 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 		++size;
 	}
 	else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0)
-		return (float)size + log((float)fitness / 100.f);
+		return exp((float)size) + (float)fitness / 1000.f;
 
 	fitness += LIVING_REWARD;
 

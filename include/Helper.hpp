@@ -12,6 +12,8 @@
 
 #define ACTIVATION(x) ((1 / (1 + exp(-2 * x))) * 2 - 1)
 
+#define THRESHOLD 2.4f
+
 #define BIAS 4
 #define WEIGHT 2
 #define WEIGHT_TUNE 1
@@ -19,7 +21,7 @@
 
 
 #define MUT_NODE 1
-#define MUT_CONNECTION 1
+#define MUT_CONNECTION 2
 #define MUT_CONNECTION_STATUS 0
 #define MUT_WEIGHT 1
 #define MUT_TOTAL_WEIGHT 0
@@ -37,8 +39,7 @@
 #define FOOD_REWARD 50
 #define FOOD_BASE 125
 
-#define TEST_POPULATION 2000
-#define SPECIE_SIZE 1000
+#define SPECIE_SIZE 200
 #define NBTHREAD 4
 
 #define CtoI(x) ((float)(x >= '0' && x <= '9'? x - 48 : x - 55))

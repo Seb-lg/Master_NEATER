@@ -262,4 +262,26 @@ std::shared_ptr<Connection> NeuralNetwork::createNoIDConnection(int id, std::sha
 	return tmp;
 }
 
+float NeuralNetwork::evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann) {
+	int N = (ann->_connections.size() > this->_connections.size() ? ann->_connections.size() : this->_connections.size());
+	int diff = 0;
+	float moyThis = 0;
+	float moyAnn = 0;
+
+	for (auto const &elem : this->_connections) {
+		if (ann->_connections.find(elem.first) == ann->_connections.end())
+			diff++;
+		moyThis += elem.second->weight;
+	}
+	for (auto const &elem : ann->_connections) {
+		if (this->_connections.find(elem.first) == this->_connections.end())
+			diff++;
+		moyAnn += elem.second->weight;
+	}
+	moyThis = moyThis / (float)N;
+	moyAnn = moyAnn / (float)N;
+//	std::cout << ((float)diff / (float)N + abs(moyThis - moyAnn)) << std::endl;
+	return ((float)diff / (float)N + abs(moyThis - moyAnn));
+}
+
 

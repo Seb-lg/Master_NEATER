@@ -44,6 +44,8 @@ public:
     std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
     std::shared_ptr<Connection> createNoIDConnection(int id, std::shared_ptr<Node> from, std::shared_ptr<Node> to);
 
+    float evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann);
+
 public:
 	float fitness;
 

@@ -16,6 +16,18 @@ Specie::Specie(int input, int output) {
 	color = sf::Color(dis(gen), dis(gen), dis(gen));
 }
 
+Specie::Specie(std::shared_ptr<NeuralNetwork> ann) {
+	population.reserve(SPECIE_SIZE);
+	for (int i = 0; i < SPECIE_SIZE; ++i) {
+		population.emplace_back(std::make_shared<NeuralNetwork>(ann->inputs.size() - BIAS, ann->outputs.size()));
+		population[i]->crossover(ann);
+	}
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, 255);
+	color = sf::Color(dis(gen), dis(gen), dis(gen));
+}
+
 void Specie::evaluateSpecie() {
 	annValue = 0.0f;
 	for (auto const& pop: population) {
@@ -28,14 +40,6 @@ void Specie::evaluateSpecie() {
 }
 
 void Specie::update(ulong seed) {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, population.size() * (ELITE / 100.0));
-
-	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
-		population[i]->crossover(population[dis(gen)]);//, population[dis(gen)]);
-		population[i]->mutation();
-	}
 
 	std::vector<std::thread> workers;
 	for (int i = 0; i < population.size(); ++i) {
@@ -62,5 +66,31 @@ void Specie::update(ulong seed) {
 	for (auto &worker : workers)
 		worker.join();
 
+	sort();
+
+	averageFitness = 0.0f;
+	for (auto const &elem : population)
+		averageFitness += elem->fitness;
+	averageFitness = averageFitness / population.size();
+}
+
+void Specie::crossover() {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, population.size() * (ELITE / 100.0));
+
+	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
+		population[i]->crossover(population[dis(gen)]);//, population[dis(gen)]);
+	}
+}
+
+void Specie::mutate() {
+
+	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
+		population[i]->mutation();
+	}
+}
+
+void Specie::sort() {
 	std::sort(population.begin(), population.end(), [](std::shared_ptr<NeuralNetwork> const&a, std::shared_ptr<NeuralNetwork> const&b){return a->fitness > b->fitness;});
 }
