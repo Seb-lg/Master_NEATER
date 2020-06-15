@@ -4,6 +4,7 @@
 
 #ifndef MASTER_NEATER_HELPER_HPP
 #define MASTER_NEATER_HELPER_HPP
+
 #include <math.h>
 
 #define ERROR(x) (std::string("\033[31m") + x + "\033[39m")
@@ -21,7 +22,7 @@
 
 
 #define MUT_NODE 1
-#define MUT_CONNECTION 2
+#define MUT_CONNECTION 1
 #define MUT_CONNECTION_STATUS 0
 #define MUT_WEIGHT 1
 #define MUT_TOTAL_WEIGHT 0

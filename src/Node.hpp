@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 #include "Connection.hpp"
+
 class Connection;
 
 class Node {
@@ -17,14 +18,14 @@ public:
 	void activate();
 
 public:
-    size_t ID;
-    bool dontActivate;
+	size_t ID;
+	bool dontActivate;
 
-    float activated;
-    float value;
+	float activated;
+	float value;
 
-    std::vector<std::shared_ptr<Connection>> connectionFrom;
-    std::vector<std::shared_ptr<Connection>> connectionTo;
+	std::vector<std::shared_ptr<Connection>> connectionFrom;
+	std::vector<std::shared_ptr<Connection>> connectionTo;
 };
 
 

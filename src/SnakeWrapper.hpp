@@ -15,6 +15,7 @@ public:
 	SnakeWrapper(int width, int height, ulong seed, bool graph = false);
 
 	std::vector<float> const &getData();
+
 	float sendAction(std::vector<float>);
 
 	void newApple();
@@ -41,7 +42,8 @@ private:
 		Up = 0,
 		Down = 1,
 		Left = 2,
-		Right = 3};
+		Right = 3
+	};
 };
 
 

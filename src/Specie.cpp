@@ -19,24 +19,14 @@ Specie::Specie(int input, int output) {
 Specie::Specie(std::shared_ptr<NeuralNetwork> ann) {
 	population.reserve(SPECIE_SIZE);
 	for (int i = 0; i < SPECIE_SIZE; ++i) {
-		population.emplace_back(std::make_shared<NeuralNetwork>(ann->inputs.size() - BIAS, ann->outputs.size()));
+		population.emplace_back(
+			std::make_shared<NeuralNetwork>(ann->inputs.size() - BIAS, ann->outputs.size()));
 		population[i]->crossover(ann);
 	}
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, 255);
 	color = sf::Color(dis(gen), dis(gen), dis(gen));
-}
-
-void Specie::evaluateSpecie() {
-	annValue = 0.0f;
-	for (auto const& pop: population) {
-		for (auto const & neur: pop->_nodes)
-			annValue += 2.0f;
-		for (auto const & cone: pop->_connections)
-			annValue += cone.second->weight;
-	}
-	annValue = annValue / population.size();
 }
 
 void Specie::update(ulong seed) {
@@ -52,7 +42,7 @@ void Specie::update(ulong seed) {
 			workers.reserve(NBTHREAD);
 		}
 		auto process = population[i];
-		workers.emplace_back([process , seed]() {
+		workers.emplace_back([process, seed]() {
 			SnakeWrapper ale(GRID_SIZE, GRID_SIZE, seed, false);
 			process->fitness = -1;
 			while (process->fitness == -1) {
@@ -78,9 +68,13 @@ void Specie::crossover() {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, population.size() * (ELITE / 100.0));
+	std::uniform_real_distribution<float> prcent(0.f, 1.0f);
 
 	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
-		population[i]->crossover(population[dis(gen)]);//, population[dis(gen)]);
+		if (prcent(gen) > 0.1f)
+			population[i]->crossover(population[dis(gen)]);//, population[dis(gen)]);
+		else
+			population[i]->crossover(population[dis(gen)], population[dis(gen)]);
 	}
 }
 
@@ -92,5 +86,8 @@ void Specie::mutate() {
 }
 
 void Specie::sort() {
-	std::sort(population.begin(), population.end(), [](std::shared_ptr<NeuralNetwork> const&a, std::shared_ptr<NeuralNetwork> const&b){return a->fitness > b->fitness;});
+	std::sort(population.begin(), population.end(),
+		  [](std::shared_ptr<NeuralNetwork> const &a, std::shared_ptr<NeuralNetwork> const &b) {
+			  return a->fitness > b->fitness;
+		  });
 }

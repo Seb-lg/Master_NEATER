@@ -4,6 +4,6 @@
 
 #include "Connection.hpp"
 
-Connection::Connection(size_t ID): ID(ID), weight(0.0f), status(true) {
+Connection::Connection(size_t ID) : ID(ID), weight(0.0f), status(true) {
 
 }

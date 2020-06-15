@@ -15,6 +15,7 @@ public:
 	Genus(int inputSize, int outputSize, int maximumSpecies, int maximumPopulation, bool graphical);
 
 	void update();
+
 	void speciesUpdate();
 
 public:

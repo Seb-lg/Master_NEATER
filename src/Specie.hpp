@@ -15,9 +15,8 @@
 class Specie {
 public:
 	Specie(int input, int output);
-	Specie(std::shared_ptr<NeuralNetwork> ann);
+	explicit Specie(std::shared_ptr<NeuralNetwork> ann);
 
-	void evaluateSpecie();
 	void update(ulong seed);
 	void crossover();
 	void mutate();

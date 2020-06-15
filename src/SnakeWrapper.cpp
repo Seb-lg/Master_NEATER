@@ -5,30 +5,32 @@
 #include <include/Helper.hpp>
 #include "SnakeWrapper.hpp"
 
-SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph): map(width * height, ' '), width(width), height(height), graph(graph), fitness(1), seed(seed) {
+SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph) : map(width * height, ' '), width(width),
+									    height(height), graph(graph), fitness(1),
+									    seed(seed) {
 	out.resize(8 * 3, 0.0f);
 	gen = std::mt19937(seed);
 	dis = std::uniform_int_distribution<int>(0, width * height);
 
 	int tmp = dis(gen);
-	tmp = (tmp <= 2? 2: (tmp > width * height - 3 ? tmp - 3: tmp));
+	tmp = (tmp <= 2 ? 2 : (tmp > width * height - 3 ? tmp - 3 : tmp));
 	snake.emplace_front(tmp);
-	snake.emplace_back(tmp+1);
-	snake.emplace_back(tmp+2);
+	snake.emplace_back(tmp + 1);
+	snake.emplace_back(tmp + 2);
 	for (auto const &elem : snake)
 		map[elem] = 'S';
 	newApple();
-	food = width * 2;
+	food = width * 3;
 	size = 3;
 }
 
 float SnakeWrapper::sendAction(std::vector<float> inputs) {
-	auto direction = (Direction)0;
+	auto direction = (Direction) 0;
 	float tmpMax = inputs[0];
 	for (int i = 0; i < inputs.size(); ++i) {
 		if (inputs[i] > tmpMax) {
 			tmpMax = inputs[i];
-			direction = (Direction)i;
+			direction = (Direction) i;
 		}
 	}
 
@@ -57,9 +59,8 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 		food += FOOD_REWARD;
 		newApple();
 		++size;
-	}
-	else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0)
-		return exp((float)size + 1 / (1 - exp(-fitness)));
+	} else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0)
+		return exp((float) size + 1 / (1 - exp(-fitness)));
 //		return exp((float)size) + (float)fitness / 1000.f;
 
 	fitness += LIVING_REWARD;
@@ -71,12 +72,14 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 	map[x + y * width] = 'S';
 
 	for (int i = 0; i < map.size() && graph; ++i) {
-		if(i%width == 0)
+		if (i % width == 0)
 			std::cout << '|' << std::endl;
 		std::cout << map[i] << map[i];
 	}
 	if (graph)
-		std::cout << std::endl << "------------------------------------------------------------------------------------------------"<<std::endl;
+		std::cout << std::endl
+			  << "------------------------------------------------------------------------------------------------"
+			  << std::endl;
 
 
 	return -1;
@@ -84,7 +87,7 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 
 void SnakeWrapper::newApple() {
 	int rd;
-	while(map[(rd = dis(gen))] != ' ');
+	while (map[(rd = dis(gen))] != ' ');
 	map[rd] = 'A';
 }
 
@@ -94,86 +97,86 @@ std::vector<float> const &SnakeWrapper::getData() {
 	int i = 1;
 	int x = *snake.begin() % width;
 	int y = *snake.begin() / width;
-	while(x + i < width and map[x + i + y * width] != 'A')
+	while (x + i < width and map[x + i + y * width] != 'A')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width and map[x + i + y * width] != 'S')
+	while (x + i < width and map[x + i + y * width] != 'S')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width)
+	while (x + i < width)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 	///------------ DOWN
 	i = 1;
-	while(y + i < width and map[x + (y + i) * width] != 'A')
+	while (y + i < width and map[x + (y + i) * width] != 'A')
 		i += 1;
-	if(y + i == width)
+	if (y + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(y + i < width and map[x + (y + i) * width] != 'S')
+	while (y + i < width and map[x + (y + i) * width] != 'S')
 		i += 1;
-	if(y + i == width)
+	if (y + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(y + i < width)
+	while (y + i < width)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 	///------------ LEFT
 	i = 1;
-	while(x - i >= 0 and map[(x - i) + y * width] != 'A')
+	while (x - i >= 0 and map[(x - i) + y * width] != 'A')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0 and map[(x - i) + y * width] != 'S')
+	while (x - i >= 0 and map[(x - i) + y * width] != 'S')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0)
+	while (x - i >= 0)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 	///------------ UP
 	i = 1;
-	while(y - i >= 0 and map[x + (y - i) * width] != 'A')
+	while (y - i >= 0 and map[x + (y - i) * width] != 'A')
 		i += 1;
-	if(y - i < 0)
+	if (y - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(y - i >= 0 and map[x + (y - i) * width] != 'S')
+	while (y - i >= 0 and map[x + (y - i) * width] != 'S')
 		i += 1;
-	if(y - i < 0)
+	if (y - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(y - i >= 0)
+	while (y - i >= 0)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 ///return lidar
@@ -181,86 +184,86 @@ std::vector<float> const &SnakeWrapper::getData() {
 
 /// right up
 	i = 1;
-	while(x + i < width and y - i >= 0 and map[(x + i) + (y - i) * width] != 'A')
+	while (x + i < width and y - i >= 0 and map[(x + i) + (y - i) * width] != 'A')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width and y - i >= 0 and map[(x + i) + (y - i) * width] != 'S')
+	while (x + i < width and y - i >= 0 and map[(x + i) + (y - i) * width] != 'S')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width and y - i >= 0)
+	while (x + i < width and y - i >= 0)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 /// right down
 	i = 1;
-	while(x + i < width and y + i < width and map[(x + i) + (y + i) * width] != 'A')
+	while (x + i < width and y + i < width and map[(x + i) + (y + i) * width] != 'A')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width and y + i < width and map[(x + i) + (y + i) * width] != 'S')
+	while (x + i < width and y + i < width and map[(x + i) + (y + i) * width] != 'S')
 		i += 1;
-	if(x + i == width)
+	if (x + i == width)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x + i < width and y + i < width)
+	while (x + i < width and y + i < width)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 /// left down
 	i = 1;
-	while(x - i >= 0 and y + i < width and map[(x - i) + (y + i) * width] != 'A')
+	while (x - i >= 0 and y + i < width and map[(x - i) + (y + i) * width] != 'A')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0 and y + i < width and map[(x - i) + (y + i) * width] != 'S')
+	while (x - i >= 0 and y + i < width and map[(x - i) + (y + i) * width] != 'S')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0 and y + i < width)
+	while (x - i >= 0 and y + i < width)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 /// left up
 	i = 1;
-	while(x - i >= 0 and y - i >= 0 and map[(x - i) + (y - i) * width] != 'A')
+	while (x - i >= 0 and y - i >= 0 and map[(x - i) + (y - i) * width] != 'A')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0 and y - i >= 0 and map[(x - i) + (y - i) * width] != 'S')
+	while (x - i >= 0 and y - i >= 0 and map[(x - i) + (y - i) * width] != 'S')
 		i += 1;
-	if(x - i < 0)
+	if (x - i < 0)
 		i = width;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 	i = 1;
-	while(x - i >= 0 and y - i >= 0)
+	while (x - i >= 0 and y - i >= 0)
 		i += 1;
-	*lidar = (1.0f - ((float)i / (float)width));
+	*lidar = (1.0f - ((float) i / (float) width));
 	++lidar;
 
 	return out;

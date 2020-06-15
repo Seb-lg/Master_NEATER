@@ -21,14 +21,15 @@ class NeuralNetwork {
 public:
 	NeuralNetwork() = delete;
 	NeuralNetwork(size_t input, size_t output, size_t brainCycle = 2);
-	NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output, size_t brainCycle = 2);
+	NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output,
+		      size_t brainCycle = 2);
 
 	void initInOut(size_t input, size_t output);
 	void update();
-    void setInput(std::vector<float> input);
-    std::vector<float> getOutput();
+	void setInput(std::vector<float> input);
+	std::vector<float> getOutput();
 
-    void crossover(std::shared_ptr<NeuralNetwork> const &parent);
+	void crossover(std::shared_ptr<NeuralNetwork> const &parent);
 	void crossover(std::shared_ptr<NeuralNetwork> const &parent1, std::shared_ptr<NeuralNetwork> const &parent2);
 
 	virtual void mutation();
@@ -38,13 +39,13 @@ public:
 	void mutationWeight();
 	void mutationTotalWeight();
 
-    std::shared_ptr<Node> createNode(float activated = 0.0f);
-    std::shared_ptr<Node> createNoIDNode(int id);
-    std::shared_ptr<Node> createNode(std::shared_ptr<Connection> &toSplit);
-    std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
-    std::shared_ptr<Connection> createNoIDConnection(int id, std::shared_ptr<Node> from, std::shared_ptr<Node> to);
+	std::shared_ptr<Node> createNode(float activated = 0.0f);
+	std::shared_ptr<Node> createNoIDNode(int id);
+	std::shared_ptr<Node> createNode(std::shared_ptr<Connection> &toSplit);
+	std::shared_ptr<Connection> createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
+	std::shared_ptr<Connection> createNoIDConnection(int id, std::shared_ptr<Node> from, std::shared_ptr<Node> to);
 
-    float evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann);
+	float evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann);
 
     /// Tools
     bool  willItLoop(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to);
@@ -56,7 +57,7 @@ public:
 	std::vector<std::shared_ptr<Node>> outputs;
 	size_t brainCycle;
 
-	std::vector<std::shared_ptr<Zone>>  zones;
+	std::vector<std::shared_ptr<Zone>> zones;
 
 	std::list<std::shared_ptr<Node>> toProcess;
 
