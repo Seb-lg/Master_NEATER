@@ -12,9 +12,9 @@
 
 #define ACTIVATION(x) ((1 / (1 + exp(-2 * x))) * 2 - 1)
 
-#define THRESHOLD 2.4f
+#define THRESHOLD 2.8f
 
-#define BIAS 4
+#define BIAS 0
 #define WEIGHT 2
 #define WEIGHT_TUNE 1
 #define ELITE 1

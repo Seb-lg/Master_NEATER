@@ -46,6 +46,9 @@ public:
 
     float evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann);
 
+    /// Tools
+    bool  willItLoop(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to);
+
 public:
 	float fitness;
 

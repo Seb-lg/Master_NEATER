@@ -42,7 +42,7 @@ void NeuralNetwork::initInOut(size_t input, size_t output) {
 }
 
 void NeuralNetwork::update() {
-    for(size_t loop = 0; loop < this->brainCycle && !toProcess.empty(); ++loop) {
+    for(size_t loop = 0; loop < this->brainCycle && !toProcess.empty(); loop) {
 
         auto tmp = toProcess.size();
         for (size_t i = 0; i < tmp && !toProcess.empty(); ++i) {
@@ -169,9 +169,11 @@ void NeuralNetwork::mutationConnection() {
 		a = std::next(_nodes.begin(), tmp)->second;
 		tmp = size(gen);
 		b = std::next(_nodes.begin(), tmp)->second;
-		while (a == b or std::find(inputs.begin(), inputs.end(), b) != inputs.end()) {
+		while (a == b or std::find(inputs.begin(), inputs.end(), b) != inputs.end() or std::find(outputs.begin(), outputs.end(), a) != outputs.end() or willItLoop(a, b)) {
 			tmp = size(gen);
 			b = std::next(_nodes.begin(), tmp)->second;
+			tmp = size(gen);
+			a = std::next(_nodes.begin(), tmp)->second;
 		}
 
 		bool exist = false;
@@ -182,7 +184,8 @@ void NeuralNetwork::mutationConnection() {
 			break;
 	}
 	std::uniform_real_distribution<float> weight(-WEIGHT_TUNE, WEIGHT_TUNE);
-	createConnection(a, b)->weight = weight(gen);
+	auto newConnection = createConnection(a, b);
+	newConnection->weight = weight(gen);
 }
 
 void NeuralNetwork::mutationConnectionStatus() {
@@ -282,6 +285,25 @@ float NeuralNetwork::evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann
 	moyAnn = moyAnn / (float)N;
 //	std::cout << ((float)diff / (float)N + abs(moyThis - moyAnn)) << std::endl;
 	return ((float)diff / (float)N + abs(moyThis - moyAnn));
+}
+
+bool NeuralNetwork::willItLoop(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to) {
+	std::list<std::shared_ptr<Node>> queue;
+
+	for (auto const &elem: to->connectionTo)
+		queue.emplace_back(elem->to);
+
+	while (!queue.empty()) {
+		auto poped = queue.front(); queue.pop_front();
+
+		if (poped == from)
+			return true;
+
+		for (auto const &elem : poped->connectionTo)
+			if (std::find(queue.begin(), queue.end(), elem->to) == queue.end())
+				queue.push_back(elem->to);
+	}
+	return false;
 }
 
 

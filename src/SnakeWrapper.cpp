@@ -5,7 +5,7 @@
 #include <include/Helper.hpp>
 #include "SnakeWrapper.hpp"
 
-SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph): map(width * height, ' '), width(width), height(height), graph(graph), fitness(0), seed(seed) {
+SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph): map(width * height, ' '), width(width), height(height), graph(graph), fitness(1), seed(seed) {
 	out.resize(8 * 3, 0.0f);
 	gen = std::mt19937(seed);
 	dis = std::uniform_int_distribution<int>(0, width * height);
@@ -59,7 +59,8 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 		++size;
 	}
 	else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0)
-		return exp((float)size) + (float)fitness / 1000.f;
+		return exp((float)size + 1 / (1 - exp(-fitness)));
+//		return exp((float)size) + (float)fitness / 1000.f;
 
 	fitness += LIVING_REWARD;
 
