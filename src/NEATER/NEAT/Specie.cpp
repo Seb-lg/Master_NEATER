@@ -4,9 +4,9 @@
 
 #include <include/Helper.hpp>
 #include "Specie.hpp"
-#include "SnakeWrapper.hpp"
+#include "src/SnakeWrapper.hpp"
 
-Specie::Specie(int input, int output) {
+Specie::Specie(int input, int output) : deadline(2) {
 	population.reserve(SPECIE_SIZE);
 	for (int i = 0; i < SPECIE_SIZE; ++i)
 		population.emplace_back(std::make_shared<NeuralNetwork>(input, output));
@@ -43,14 +43,14 @@ void Specie::update(ulong seed) {
 		}
 		auto process = population[i];
 		workers.emplace_back([process, seed]() {
-			SnakeWrapper ale(GRID_SIZE, GRID_SIZE, seed, false);
-			process->fitness = -1;
-			while (process->fitness == -1) {
-				auto data = ale.getData();
-				process->setInput(data);
-				process->update();
-				process->fitness = ale.sendAction(process->getOutput());
-			}
+		    SnakeWrapper ale(GRID_SIZE, GRID_SIZE, seed, false);
+		    process->fitness = -1;
+		    while (process->fitness == -1) {
+			    auto data = ale.getData();
+			    process->setInput(data);
+			    process->update();
+			    process->fitness = ale.sendAction(process->getOutput());
+		    }
 		});
 	}
 	for (auto &worker : workers)
@@ -71,10 +71,11 @@ void Specie::crossover() {
 	std::uniform_real_distribution<float> prcent(0.f, 1.0f);
 
 	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
-		if (prcent(gen) > 0.1f)
-			population[i]->crossover(population[dis(gen)]);//, population[dis(gen)]);
-		else
+		if (prcent(gen) < CROSSOVER_RATE)
 			population[i]->crossover(population[dis(gen)], population[dis(gen)]);
+		else
+			population[i]->crossover(population[dis(gen)]);
+
 	}
 }
 
@@ -88,6 +89,6 @@ void Specie::mutate() {
 void Specie::sort() {
 	std::sort(population.begin(), population.end(),
 		  [](std::shared_ptr<NeuralNetwork> const &a, std::shared_ptr<NeuralNetwork> const &b) {
-			  return a->fitness > b->fitness;
+		      return a->fitness > b->fitness;
 		  });
 }

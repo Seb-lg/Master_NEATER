@@ -14,15 +14,14 @@
 #include <map>
 #include <random>
 
-#include "Zone.hpp"
+#include "src/NEATER/Zone.hpp"
 #include "IOANN.hpp"
+
 
 class NeuralNetwork {
 public:
 	NeuralNetwork() = delete;
-	NeuralNetwork(size_t input, size_t output, size_t brainCycle = 2);
-	NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output,
-		      size_t brainCycle = 2);
+	NeuralNetwork(size_t input, size_t output);
 
 	void initInOut(size_t input, size_t output);
 	void update();
@@ -55,17 +54,11 @@ public:
 
 	std::vector<std::shared_ptr<Node>> inputs;
 	std::vector<std::shared_ptr<Node>> outputs;
-	size_t brainCycle;
-
-	std::vector<std::shared_ptr<Zone>> zones;
 
 	std::list<std::shared_ptr<Node>> toProcess;
 
 	std::map<int, std::shared_ptr<Node>> _nodes;
 	std::map<int, std::shared_ptr<Connection>> _connections;
-
-	std::vector<std::vector<Input>> _inCloseness;
-	std::vector<std::vector<Output>> _outCloseness;
 
 	std::random_device rd;
 	std::mt19937 gen;

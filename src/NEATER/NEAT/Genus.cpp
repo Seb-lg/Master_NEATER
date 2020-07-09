@@ -5,7 +5,7 @@
 #include <include/Helper.hpp>
 #include <climits>
 #include "Genus.hpp"
-#include "SnakeWrapper.hpp"
+#include "src/SnakeWrapper.hpp"
 
 Genus::Genus(int inputSize, int outputSize, int maximumSpecies, int maximumPopulation, bool graphical)
 	: inputSize(inputSize), outputSize(outputSize), maximumSpecies(maximumSpecies),
@@ -23,9 +23,16 @@ void Genus::update() {
 	for (auto &specie : species)
 		specie->update(seed);
 
+	std::cout << INFO("Generation ") << epoch << std::endl;
+	for (auto const &elem : species)
+		std::cout << INFO("\t\tfitness: ")
+			  << elem->population[0]->fitness << std::endl;
+
 	if (graphic) {
 		int finished = 0;
 		std::vector<SnakeWrapper> ale(species.size(), SnakeWrapper(GRID_SIZE, GRID_SIZE, seed));
+
+
 		for (auto &specie : species)
 			specie->population[0]->fitness = -1;
 
@@ -50,14 +57,19 @@ void Genus::update() {
 			std::this_thread::sleep_for(std::chrono::microseconds(1000000 / 30));//16666));
 		}
 	}
-	std::cout << INFO("Generation ") << epoch << std::endl;
-	for (auto const &elem : species)
-	std::cout << INFO("\t\tfitness: ")
-		  << elem->population[0]->fitness << std::endl;
+
 	epoch++;
 }
 
 void Genus::speciesUpdate() {
+	/// Kill species weak species
+	for (auto &elem : species) {
+		if (elem->deadline <= this->epoch) {
+			species.erase(std::find(species.begin(), species.end(), elem));
+			break;
+		}
+	}
+
 	/// Change population specie for elem to different
 	beforeloop:
 	for (auto &specie: species) {
@@ -92,6 +104,19 @@ void Genus::speciesUpdate() {
 	float totalAverageFitness = 0.0f;
 	for (auto &elem : species) {
 		totalAverageFitness += elem->averageFitness;
+	}
+
+	/// Update Species global fitness
+	for (auto &elem : species) {
+		elem->sort();
+		if (elem->population[0]->fitness > elem->highestFitness) {
+			elem->highestFitness = elem->population[0]->fitness;
+			elem->deadline = epoch + SPECIE_DEADLINE;
+		}
+		if (elem->averageFitness >= totalAverageFitness / species.size()) {
+			elem->deadline++;
+		}
+
 	}
 
 	/// Update Specie Size

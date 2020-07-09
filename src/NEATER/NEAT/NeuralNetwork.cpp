@@ -5,27 +5,10 @@
 #include <algorithm>
 #include <random>
 #include "NeuralNetwork.hpp"
-#include "../include/Helper.hpp"
+#include "include/Helper.hpp"
 
-NeuralNetwork::NeuralNetwork(size_t input, size_t output, size_t brainCycle) : fitness(0), brainCycle(brainCycle), rd(),
-									       gen(rd()) {
+NeuralNetwork::NeuralNetwork(size_t input, size_t output) : fitness(0), rd(), gen(rd()) {
 	initInOut(input, output);
-}
-
-NeuralNetwork::NeuralNetwork(std::vector<std::vector<Input>> &input, std::vector<std::vector<Output>> &output,
-			     size_t brainCycle) : fitness(0), brainCycle(brainCycle), rd(), gen(rd()) {
-	this->_inCloseness = input;
-	this->_outCloseness = output;
-
-	for (auto &elem : this->_inCloseness)
-		std::sort(elem.begin(), elem.end(),
-			  [](Input const &a, Input const &b) { return a.closeness < b.closeness; });
-
-	for (auto &elem : this->_outCloseness)
-		std::sort(elem.begin(), elem.end(),
-			  [](Output const &a, Output const &b) { return a.closeness < b.closeness; });
-
-	initInOut(input.size(), output.size());
 }
 
 void NeuralNetwork::initInOut(size_t input, size_t output) {
@@ -46,7 +29,7 @@ void NeuralNetwork::initInOut(size_t input, size_t output) {
 }
 
 void NeuralNetwork::update() {
-	for (size_t loop = 0; loop < this->brainCycle && !toProcess.empty(); ++loop) {
+	while (!toProcess.empty()) {
 
 		auto tmp = toProcess.size();
 		for (size_t i = 0; i < tmp && !toProcess.empty(); ++i) {
@@ -82,8 +65,6 @@ std::vector<float> NeuralNetwork::getOutput() {
 	auto it = out.begin();
 	for (auto const &elem: this->outputs) {
 		*it = elem->activated;
-//        if (elem->activated != 0.0f)
-//			std::cout << "check " << elem->activated << " " << *it << std::endl;
 		++it;
 	}
 	return out;
@@ -95,16 +76,16 @@ void NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent) {
 		this->_nodes.emplace(elem.first, createNoIDNode(elem.first));
 	this->_connections.clear();
 	for (auto const &elem: parent->_connections) {
-		this->_connections.emplace(elem.first,
-					   createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID],
-								this->_nodes[elem.second->to->ID]));
+		this->_connections.emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
 		this->_connections[elem.first]->status = elem.second->status;
 		this->_connections[elem.first]->weight = elem.second->weight;
 	}
 
 	this->inputs.clear();
-	for (auto const &elem: parent->inputs)
+	for (auto const &elem: parent->inputs) {
 		inputs.emplace_back(this->_nodes[elem->ID]);
+		this->_nodes[elem->ID]->dontActivate = true;
+	}
 	this->outputs.clear();
 	for (auto const &elem: parent->outputs)
 		outputs.emplace_back(this->_nodes[elem->ID]);
@@ -112,8 +93,7 @@ void NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent) {
 	toProcess.clear();
 }
 
-void
-NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent1, const std::shared_ptr<NeuralNetwork> &parent2) {
+void NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent1, const std::shared_ptr<NeuralNetwork> &parent2) {
 	this->_nodes.clear();
 	for (auto const &elem: parent1->_nodes)
 		this->_nodes.emplace(elem.first, createNoIDNode(elem.first));
@@ -121,18 +101,16 @@ NeuralNetwork::crossover(const std::shared_ptr<NeuralNetwork> &parent1, const st
 		this->_nodes.try_emplace(elem.first, createNoIDNode(elem.first));
 	this->_connections.clear();
 	for (auto const &elem: parent1->_connections) {
-		this->_connections.emplace(elem.first,
-					   createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID],
-								this->_nodes[elem.second->to->ID]));
+		this->_connections.emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
 		this->_connections[elem.first]->status = elem.second->status;
 		this->_connections[elem.first]->weight = elem.second->weight;
 	}
 	for (auto const &elem: parent2->_connections) {
-		this->_connections.try_emplace(elem.first, createNoIDConnection(elem.second->ID,
-										this->_nodes[elem.second->from->ID],
-										this->_nodes[elem.second->to->ID]));
-		this->_connections[elem.first]->status = (this->_connections[elem.first]->status ? elem.second->status : false);
-		this->_connections[elem.first]->weight = elem.second->weight;
+		if (!willItLoop(this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID])) {
+			this->_connections.try_emplace(elem.first, createNoIDConnection(elem.second->ID, this->_nodes[elem.second->from->ID], this->_nodes[elem.second->to->ID]));
+			this->_connections[elem.first]->status = (this->_connections[elem.first]->status ? elem.second->status : false);
+			this->_connections[elem.first]->weight = elem.second->weight;
+		}
 	}
 
 	this->inputs.clear();
@@ -199,7 +177,7 @@ void NeuralNetwork::mutationConnection() {
 		if (a != b && !exist)
 			break;
 	}
-	std::uniform_real_distribution<float> weight(-WEIGHT_TUNE, WEIGHT_TUNE);
+	std::uniform_real_distribution<float> weight(-WEIGHT, WEIGHT);
 	auto newConnection = createConnection(a, b);
 	newConnection->weight = weight(gen);
 }
@@ -231,7 +209,7 @@ void NeuralNetwork::mutationTotalWeight() {
 }
 
 std::shared_ptr<Node> NeuralNetwork::createNode(float activated) {
-	static size_t id = 100;
+	static size_t id = MAX_SIZE_INPUT;
 	auto tmp = std::make_shared<Node>(id, activated);
 	this->_nodes.emplace(id, tmp);
 	id++;
@@ -245,15 +223,21 @@ std::shared_ptr<Node> NeuralNetwork::createNoIDNode(int id) {
 }
 
 std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toSplit) {
-	/*auto newNode = createNode();
-	auto &tmp = toSplit->to->connectionFrom;
-	tmp.erase(std::find(tmp.begin(), tmp.end(), toSplit));
-	auto to = toSplit->to;
-	toSplit->to = newNode;
-	newNode->connectionFrom.push_back(toSplit);
-	createConnection(newNode, to);*/
+	static std::vector<std::tuple<int, int>> innovation;
 
-	auto newNode = createNode();
+	std::shared_ptr<Node> newNode;
+	for (int i = 0; i < innovation.size(); ++i) {
+		if (std::get<0>(innovation[i]) == toSplit->from->ID && std::get<1>(innovation[i]) == toSplit->to->ID) {
+			newNode = createNoIDNode(i + MAX_SIZE_INPUT);
+			break;
+		}
+	}
+
+	if (!newNode) {
+//		std::cout << INFO("NEW NODE") << std::endl;
+		newNode = createNode();
+		innovation.emplace_back(std::make_tuple(toSplit->from->ID, toSplit->to->ID));
+	}
 	auto connec1 = createConnection(toSplit->from, newNode);
 	auto connec2 = createConnection(newNode, toSplit->to);
 
@@ -265,7 +249,15 @@ std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toS
 }
 
 std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to) {
+	static std::vector<std::tuple<int, int>> innovation;
 	static size_t id = 0;
+
+	for (int i = 0; i < innovation.size(); ++i) {
+		if (std::get<0>(innovation[i]) == from->ID && std::get<1>(innovation[i]) == to->ID) {
+			return createNoIDConnection(i, from, to);
+		}
+	}
+
 	auto tmp = std::make_shared<Connection>(id);
 	this->_connections.emplace(id, tmp);
 
@@ -273,6 +265,8 @@ std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node
 	to->connectionFrom.push_back(tmp);
 	tmp->from = from;
 	tmp->to = to;
+//	std::cout << INFO("NEW CONNECTION") << std::endl;
+	innovation.emplace_back(std::make_tuple(from->ID, to->ID));
 
 	id++;
 	return tmp;
@@ -291,8 +285,7 @@ NeuralNetwork::createNoIDConnection(int id, std::shared_ptr<Node> from, std::sha
 }
 
 float NeuralNetwork::evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann) {
-	int N = (ann->_connections.size() > this->_connections.size() ? ann->_connections.size()
-								      : this->_connections.size());
+	int N = (ann->_connections.size() > this->_connections.size() ? ann.get() : this)->_connections.size();
 	int diff = 0;
 	float moyThis = 0;
 	float moyAnn = 0;
@@ -309,7 +302,6 @@ float NeuralNetwork::evaluateCloseness(const std::shared_ptr<NeuralNetwork> &ann
 	}
 	moyThis = moyThis / (float) N;
 	moyAnn = moyAnn / (float) N;
-//	std::cout << ((float)diff / (float)N + abs(moyThis - moyAnn)) << std::endl;
 	return ((float) diff / (float) N + abs(moyThis - moyAnn));
 }
 
@@ -320,7 +312,8 @@ bool NeuralNetwork::willItLoop(std::shared_ptr<Node> &from, std::shared_ptr<Node
 		queue.emplace_back(elem->to);
 
 	while (!queue.empty()) {
-		auto poped = queue.front(); queue.pop_front();
+		auto poped = queue.front();
+		queue.pop_front();
 
 		if (poped == from)
 			return true;

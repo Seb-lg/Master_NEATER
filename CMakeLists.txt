@@ -8,22 +8,22 @@ include_directories(.)
 
 add_executable(Master_NEATER
         Main.cpp
-        src/Node.cpp
-        src/Node.hpp
-        src/Connection.cpp
-        src/Connection.hpp
-        src/NeuralNetwork.cpp
-        src/NeuralNetwork.hpp
-        src/Zone.cpp
-        src/Zone.hpp
+        src/NEATER/NEAT/Node.cpp
+        src/NEATER/NEAT/Node.hpp
+        src/NEATER/NEAT/Connection.cpp
+        src/NEATER/NEAT/Connection.hpp
+        src/NEATER/NEAT/NeuralNetwork.cpp
+        src/NEATER/NEAT/NeuralNetwork.hpp
+        src/NEATER/Zone.cpp
+        src/NEATER/Zone.hpp
         include/Helper.hpp
-        src/IOANN.hpp
+        src/NEATER/NEAT/IOANN.hpp
 #        src/ALEWrapper.cpp
 #        src/ALEWrapper.hpp
         src/SnakeWrapper.cpp
         src/SnakeWrapper.hpp
         src/Graphical/Graphical.cpp
-        src/Graphical/Graphical.hpp src/Specie.cpp src/Specie.hpp src/Genus.cpp src/Genus.hpp)
+        src/Graphical/Graphical.hpp src/NEATER/NEAT/Specie.cpp src/NEATER/NEAT/Specie.hpp src/NEATER/NEAT/Genus.cpp src/NEATER/NEAT/Genus.hpp)
 
 #target_link_libraries (Master_NEATER Threads::Threads)
 target_link_libraries(Master_NEATER ${CMAKE_THREAD_LIBS_INIT})

@@ -5,8 +5,8 @@
 #ifndef MASTER_NEATER_ZONE_HPP
 #define MASTER_NEATER_ZONE_HPP
 
-#include "Node.hpp"
-#include "Connection.hpp"
+#include "src/NEATER/NEAT/Node.hpp"
+#include "src/NEATER/NEAT/Connection.hpp"
 
 class Zone {
 

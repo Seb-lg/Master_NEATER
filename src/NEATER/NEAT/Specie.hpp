@@ -28,6 +28,9 @@ public:
 
 	sf::Color color;
 	float averageFitness;
+
+	float highestFitness;
+	int deadline;
 };
 
 
