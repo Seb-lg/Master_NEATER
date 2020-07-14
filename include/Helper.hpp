@@ -26,8 +26,8 @@
 /// MUTATION RATES
 #define MUT_NODE 1
 #define MUT_CONNECTION 1
-#define MUT_CONNECTION_STATUS 0
-#define MUT_WEIGHT 0
+#define MUT_CONNECTION_STATUS 1
+#define MUT_WEIGHT 1
 #define MUT_TOTAL_WEIGHT 1
 
 #define MUT_NODE_VALUE 0.5f
@@ -47,7 +47,7 @@
 #define FOOD_MAX 125
 
 #define SPECIE_SIZE 200
-#define NBTHREAD 4
+#define NBTHREAD 6
 
 
 #endif //MASTER_NEATER_HELPER_HPP

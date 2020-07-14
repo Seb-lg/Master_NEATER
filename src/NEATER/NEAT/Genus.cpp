@@ -54,7 +54,7 @@ void Genus::update() {
 				graphic->draw(ale[i].map, ale[i].width, species[i]->color);
 			}
 			graphic->update();
-			std::this_thread::sleep_for(std::chrono::microseconds(1000000 / 30));//16666));
+			std::this_thread::sleep_for(std::chrono::microseconds(1000000 / 60));
 		}
 	}
 
