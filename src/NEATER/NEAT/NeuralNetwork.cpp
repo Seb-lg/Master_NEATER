@@ -129,9 +129,10 @@ void NeuralNetwork::mutation() {
 	std::uniform_int_distribution<> dis(0, 10);
 	std::uniform_real_distribution<float> prct(0.0, 1.0);
 
-	for (int i = 0; i < MUT_NODE; ++i)
+	for (int i = 0; i < MUT_NODE; ++i) {
 		if (prct(gen) > MUT_NODE_VALUE)
 			mutationNode();
+	}
 	for (int i = 0; i < MUT_CONNECTION; ++i)
 		if (prct(gen) > MUT_CONNECTION_VALUE)
 			mutationConnection();
@@ -223,20 +224,19 @@ std::shared_ptr<Node> NeuralNetwork::createNoIDNode(int id) {
 }
 
 std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toSplit) {
-	static std::vector<std::tuple<int, int>> innovation;
+//	static std::vector<std::tuple<int, int>> innovationNodes;
 
 	std::shared_ptr<Node> newNode;
-	for (int i = 0; i < innovation.size(); ++i) {
-		if (std::get<0>(innovation[i]) == toSplit->from->ID && std::get<1>(innovation[i]) == toSplit->to->ID) {
+	for (int i = 0; i < innovationNodes.size(); ++i) {
+		if (std::get<0>(innovationNodes[i]) == toSplit->from->ID && std::get<1>(innovationNodes[i]) == toSplit->to->ID) {
 			newNode = createNoIDNode(i + MAX_SIZE_INPUT);
 			break;
 		}
 	}
 
 	if (!newNode) {
-//		std::cout << INFO("NEW NODE") << std::endl;
 		newNode = createNode();
-		innovation.emplace_back(std::make_tuple(toSplit->from->ID, toSplit->to->ID));
+		innovationNodes.emplace_back(std::make_tuple(toSplit->from->ID, toSplit->to->ID));
 	}
 	auto connec1 = createConnection(toSplit->from, newNode);
 	auto connec2 = createConnection(newNode, toSplit->to);
@@ -249,26 +249,26 @@ std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toS
 }
 
 std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node> from, std::shared_ptr<Node> to) {
-	static std::vector<std::tuple<int, int>> innovation;
-	static size_t id = 0;
+//	static std::vector<std::tuple<int, int>> innovationConnection;
+//	static size_t id = 0;
 
-	for (int i = 0; i < innovation.size(); ++i) {
-		if (std::get<0>(innovation[i]) == from->ID && std::get<1>(innovation[i]) == to->ID) {
+	for (int i = 0; i < innovationConnection.size(); ++i) {
+		if (std::get<0>(innovationConnection[i]) == from->ID && std::get<1>(innovationConnection[i]) == to->ID) {
 			return createNoIDConnection(i, from, to);
 		}
 	}
 
-	auto tmp = std::make_shared<Connection>(id);
-	this->_connections.emplace(id, tmp);
+	auto tmp = std::make_shared<Connection>(innovationConnection.size());
+	this->_connections.emplace(innovationConnection.size(), tmp);
 
 	from->connectionTo.push_back(tmp);
 	to->connectionFrom.push_back(tmp);
 	tmp->from = from;
 	tmp->to = to;
 //	std::cout << INFO("NEW CONNECTION") << std::endl;
-	innovation.emplace_back(std::make_tuple(from->ID, to->ID));
+	innovationConnection.emplace_back(std::make_tuple(from->ID, to->ID));
 
-	id++;
+//	id++;
 	return tmp;
 }
 

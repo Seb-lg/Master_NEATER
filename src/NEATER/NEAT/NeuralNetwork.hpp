@@ -17,6 +17,9 @@
 #include "src/NEATER/Zone.hpp"
 #include "IOANN.hpp"
 
+static std::vector<std::tuple<int, int>> innovationNodes;
+static std::vector<std::tuple<int, int>> innovationConnection;
+
 
 class NeuralNetwork {
 public:
@@ -32,11 +35,11 @@ public:
 	void crossover(std::shared_ptr<NeuralNetwork> const &parent1, std::shared_ptr<NeuralNetwork> const &parent2);
 
 	virtual void mutation();
-	void mutationNode();
-	void mutationConnection();
-	void mutationConnectionStatus();
-	void mutationWeight();
-	void mutationTotalWeight();
+	virtual void mutationNode();
+	virtual void mutationConnection();
+	virtual void mutationConnectionStatus();
+	virtual void mutationWeight();
+	virtual void mutationTotalWeight();
 
 	std::shared_ptr<Node> createNode(float activated = 0.0f);
 	std::shared_ptr<Node> createNoIDNode(int id);

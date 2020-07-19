@@ -5,7 +5,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
@@ -13,6 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 find_package (Threads REQUIRED)
 
 include_directories(.)
+include_directories(src)
+include_directories(src/NEATER)
 
 add_executable(Master_NEATER
         Main.cpp
@@ -25,13 +26,13 @@ add_executable(Master_NEATER
         src/NEATER/Zone.cpp
         src/NEATER/Zone.hpp
         include/Helper.hpp
-        src/NEATER/NEAT/IOANN.hpp
+        src/NEATER/IOANN.hpp
 #        src/ALEWrapper.cpp
 #        src/ALEWrapper.hpp
         src/SnakeWrapper.cpp
         src/SnakeWrapper.hpp
         src/Graphical/Graphical.cpp
-        src/Graphical/Graphical.hpp src/NEATER/NEAT/Specie.cpp src/NEATER/NEAT/Specie.hpp src/NEATER/NEAT/Genus.cpp src/NEATER/NEAT/Genus.hpp)
+        src/Graphical/Graphical.hpp src/NEATER/NEAT/Specie.cpp src/NEATER/NEAT/Specie.hpp src/NEATER/NEAT/Genus.cpp src/NEATER/NEAT/Genus.hpp src/NEATER/NEATERNeuralNetwork.cpp src/NEATER/NEATERNeuralNetwork.hpp src/NEATER/MutationTypes.hpp include/NEATERHelper.hpp src/NEATER/NEATERSpecie.cpp src/NEATER/NEATERSpecie.hpp)
 
 #target_link_libraries (Master_NEATER Threads::Threads)
 target_link_libraries(Master_NEATER ${CMAKE_THREAD_LIBS_INIT})

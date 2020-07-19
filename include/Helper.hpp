@@ -16,7 +16,7 @@
 #define THRESHOLD 2.8f
 
 #define BIAS 0
-#define WEIGHT 2.f
+#define WEIGHT 5.f
 #define WEIGHT_TUNE 0.2f
 #define ELITE 1.f
 #define SPECIE_DEADLINE 15
