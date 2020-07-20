@@ -4,6 +4,12 @@
 
 #pragma once
 
+#include <src/NEATER/MutationTypes.hpp>
+#include <list>
+
+extern std::list<MutationType> globalMutations;
+extern int lastGeneration;
+
 #define USE_PREVMUTATION 0.7f
 #define NB_MUT_USE 100
 #define THRESHOLD_HISTO 1.0f

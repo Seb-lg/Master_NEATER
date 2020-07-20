@@ -27,7 +27,8 @@ public:
 	NeuralNetwork(size_t input, size_t output);
 
 	void initInOut(size_t input, size_t output);
-	void update();
+
+    virtual void update();
 	void setInput(std::vector<float> input);
 	std::vector<float> getOutput();
 

@@ -19,7 +19,7 @@ void Zone::createConnection(std::shared_ptr<Connection> newConnection) {
 }
 
 std::shared_ptr<Node> Zone::selectRandomNode() {
-	std::uniform_int_distribution distribution(0, (int)nodes.size());
+	std::uniform_int_distribution distribution(0, (int)nodes.size() - 1);
 	return std::next(nodes.begin(), distribution(gen))->second;
 }
 

@@ -32,7 +32,7 @@ add_executable(Master_NEATER
         src/SnakeWrapper.cpp
         src/SnakeWrapper.hpp
         src/Graphical/Graphical.cpp
-        src/Graphical/Graphical.hpp src/NEATER/NEAT/Specie.cpp src/NEATER/NEAT/Specie.hpp src/NEATER/NEAT/Genus.cpp src/NEATER/NEAT/Genus.hpp src/NEATER/NEATERNeuralNetwork.cpp src/NEATER/NEATERNeuralNetwork.hpp src/NEATER/MutationTypes.hpp include/NEATERHelper.hpp src/NEATER/NEATERSpecie.cpp src/NEATER/NEATERSpecie.hpp)
+        src/Graphical/Graphical.hpp src/NEATER/NEAT/Specie.cpp src/NEATER/NEAT/Specie.hpp src/NEATER/NEAT/Genus.cpp src/NEATER/NEAT/Genus.hpp src/NEATER/NEATERNeuralNetwork.cpp src/NEATER/NEATERNeuralNetwork.hpp src/NEATER/MutationTypes.hpp include/NEATERHelper.hpp src/NEATER/NEATERSpecie.cpp src/NEATER/NEATERSpecie.hpp src/NEATER/NEATERGenus.cpp src/NEATER/NEATERGenus.hpp)
 
 #target_link_libraries (Master_NEATER Threads::Threads)
 target_link_libraries(Master_NEATER ${CMAKE_THREAD_LIBS_INIT})

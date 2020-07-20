@@ -22,7 +22,7 @@ enum class Zones {
 };
 
 struct MutationType{
-    MutationType() = default;
+    MutationType(): deltaFitness(-1), type(Mutation::InterZonesConnection), idZone(-1){}
     float deltaFitness;
     Mutation type;
 

@@ -8,13 +8,14 @@
 #include "MutationTypes.hpp"
 
 typedef std::vector<std::vector<int>> ioTable;
-static std::list<MutationType> globalMutations;
-static int lastGeneration = 0;
 
 class NEATERNeuralNetwork: public NeuralNetwork {
 public:
     NEATERNeuralNetwork() = delete;
     NEATERNeuralNetwork(ioTable input, ioTable output, size_t brainCycle);
+
+    void update();
+    void crossover(std::shared_ptr<NEATERNeuralNetwork>);
 
     void mutation() override;
     void execMutation(const MutationType &mut);

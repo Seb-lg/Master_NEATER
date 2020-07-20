@@ -47,7 +47,7 @@
 #define FOOD_MAX 125
 
 #define SPECIE_SIZE 200
-#define NBTHREAD 6
+#define NBTHREAD 7
 
 
 #endif //MASTER_NEATER_HELPER_HPP
