@@ -31,9 +31,9 @@ NEATERSpecie::NEATERSpecie(std::shared_ptr<NEATERNeuralNetwork> ann) {
 
 void NEATERSpecie::update(ulong seed) {
 
-//	std::vector<std::thread> workers;
+	std::vector<std::thread> workers;
 	for (int i = 0; i < population.size(); ++i) {
-		/*if (i % NBTHREAD == 0) {
+		if (i % NBTHREAD == 0) {
 			if (!workers.empty()) {
 				for (auto &elem : workers)
 					elem.join();
@@ -42,8 +42,7 @@ void NEATERSpecie::update(ulong seed) {
 			workers.reserve(NBTHREAD);
 		}
 		auto process = population[i];
-		workers.emplace_back(*/
-		auto process = population[i];
+		workers.emplace_back(
 		[process, seed]() {
 		    SnakeWrapper ale(GRID_SIZE, GRID_SIZE, seed, false);
 		    process->fitness = -1;
@@ -53,10 +52,10 @@ void NEATERSpecie::update(ulong seed) {
 			    process->update();
 			    process->fitness = ale.sendAction(process->getOutput());
 		    }
-		}();//);
+		});
 	}
-//	for (auto &worker : workers)
-//		worker.join();
+	for (auto &worker : workers)
+		worker.join();
 
 	sort();
 

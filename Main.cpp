@@ -21,6 +21,59 @@ int main(int ac, char **av) {
 	out.resize(1);
 	out[0] = {0, 1, 2, 3};
 
+	MutationType mutation;
+	mutation.type = Mutation::InterZonesConnection;
+	mutation.deltaFitness = 1;
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
+	std::get<1>(std::get<0>(mutation.mutation)) = 0;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 0;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
+	std::get<1>(std::get<0>(mutation.mutation)) = 1;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 1;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
+	std::get<1>(std::get<0>(mutation.mutation)) = 2;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 2;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<0>(mutation.mutation)) = 3;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::UnusedOutput;
+	std::get<1>(std::get<1>(mutation.mutation)) = 0;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<0>(mutation.mutation)) = 0;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 3;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<0>(mutation.mutation)) = 1;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 3;
+	globalMutations.emplace_back(mutation);
+
+	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<0>(mutation.mutation)) = 2;
+
+	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
+	std::get<1>(std::get<1>(mutation.mutation)) = 3;
+	globalMutations.emplace_back(mutation);
+
+
 	NEATERGenus genus(in, out, 20, 20, 2000, true);
 
 	while (genus.epoch < 100) {

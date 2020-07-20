@@ -58,7 +58,10 @@ void NEATERGenus::update() {
 		}
 	}
 
-	lastGeneration = (globalMutations.empty() ? 0 : globalMutations.size() - 1);
+	int size = 0;
+	for (auto &elem: globalMutations)
+		++size;
+	lastGeneration = size;
 	epoch++;
 }
 

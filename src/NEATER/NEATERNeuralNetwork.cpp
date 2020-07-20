@@ -17,7 +17,7 @@ NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t b
 	}
 	zones.emplace_back(std::make_shared<Zone>(-1));
 	zones.back()->nodes.emplace(inputs.size() + output.size() + input.size(), createNoIDNode(inputs.size() + output.size() + input.size()));
-
+	//TODO link les zones entre elles -> les zone input ver la zone reflexion
 
 	_inCloseness.resize(input.size());
 	for (int i = 0; i < input.size(); ++i) {
@@ -157,11 +157,11 @@ void NEATERNeuralNetwork::execMutation(const MutationType &mut) {
 			mutationSuccess = false;
 			std::cout << ERROR("Mutation Type Undefined") << ": NEATERNeuralNetwork::execMutation" << std::endl;
 	}
-	mutationIterator = globalMutations.size();
-	std::cout << globalMutations.size() << std::endl;
-	if (mutationIterator != 0) {
-		exit(42);
+	int size = 0;
+	for (auto &elem : globalMutations) {
+		size++;
 	}
+	mutationIterator = size;
 	globalMutations.emplace_back(mut);
 	(globalMutations.end()--)->deltaFitness = (mutationSuccess ? fitness : -1);
 }
