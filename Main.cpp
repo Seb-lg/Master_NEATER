@@ -23,39 +23,39 @@ int main(int ac, char **av) {
 
 	MutationType mutation;
 	mutation.type = Mutation::InterZonesConnection;
-	mutation.deltaFitness = 1;
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
+	mutation.deltaFitness = 2;
+	mutation.mutation.first.first = Zones::UnusedInput;
+	mutation.mutation.first.second = 0;
+
+	mutation.mutation.second.first = Zones::Zone;
+	mutation.mutation.second.second = 0;
+	globalMutations.emplace_back(mutation);
+
+	mutation.mutation.first.first = Zones::UnusedInput;
+	mutation.mutation.first.second = 1;
+
+	mutation.mutation.second.first = Zones::Zone;
+	mutation.mutation.second.second = 1;
+	globalMutations.emplace_back(mutation);
+
+	mutation.mutation.first.first = Zones::UnusedInput;
+	mutation.mutation.first.second = 2;
+
+	mutation.mutation.second.first = Zones::Zone;
+	mutation.mutation.second.second = 2;
+	globalMutations.emplace_back(mutation);
+
+	mutation.mutation.first.first = Zones::Zone;
+	mutation.mutation.first.second = 3;
+
+	mutation.mutation.second.first = Zones::UnusedOutput;
+	mutation.mutation.second.second = 0;
+	globalMutations.emplace_back(mutation);
+
+	/*std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
 	std::get<1>(std::get<0>(mutation.mutation)) = 0;
 
 	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 0;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
-	std::get<1>(std::get<0>(mutation.mutation)) = 1;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 1;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::UnusedInput;
-	std::get<1>(std::get<0>(mutation.mutation)) = 2;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 2;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<0>(mutation.mutation)) = 3;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::UnusedOutput;
-	std::get<1>(std::get<1>(mutation.mutation)) = 0;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<0>(mutation.mutation)) = 0;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
 	std::get<1>(std::get<1>(mutation.mutation)) = 3;
 	globalMutations.emplace_back(mutation);
 
@@ -71,12 +71,12 @@ int main(int ac, char **av) {
 
 	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
 	std::get<1>(std::get<1>(mutation.mutation)) = 3;
-	globalMutations.emplace_back(mutation);
+	globalMutations.emplace_back(mutation);*/
 
 
 	NEATERGenus genus(in, out, 20, 20, 2000, true);
 
-	while (genus.epoch < 100) {
+	while (genus.epoch < 15) {
 		genus.update();
 		genus.speciesUpdate();
 	}

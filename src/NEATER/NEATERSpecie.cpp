@@ -9,8 +9,10 @@
 
 NEATERSpecie::NEATERSpecie(ioTable input, ioTable output, size_t brainCycle) : deadline(2), input(input), output(output), brainCycle(brainCycle) {
 	population.reserve(SPECIE_SIZE);
-	for (int i = 0; i < SPECIE_SIZE; ++i)
+	for (int i = 0; i < SPECIE_SIZE; ++i) {
 		population.emplace_back(std::make_shared<NEATERNeuralNetwork>(input, output, brainCycle));
+		population[i]->createRandomConnections();
+	}
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, 255);
@@ -66,7 +68,7 @@ void NEATERSpecie::update(ulong seed) {
 
 	for (auto &elem: population) {
 		if (elem->mutationIterator != -1) {
-			auto it = std::next(globalMutations.begin(), elem->mutationIterator); ///wtf pk mutationIterator est à -1000000
+			auto it = std::next(globalMutations.begin(), elem->mutationIterator);
 			if (it->deltaFitness != -1)
 				it->deltaFitness = elem->fitness - it->deltaFitness;
 		}
@@ -85,7 +87,6 @@ void NEATERSpecie::crossover() {
 }
 
 void NEATERSpecie::mutate() {
-
 	for (int i = population.size() * (ELITE / 100.0) + 1; i < population.size(); ++i) {
 		population[i]->mutation();
 	}

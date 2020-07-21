@@ -8,8 +8,8 @@
 #include "NEATERNeuralNetwork.hpp"
 
 
-NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t brainCycle)
-	: NeuralNetwork([input](){int tmp = 0; for (auto &elem: input){tmp += elem.size();}return tmp;}(), [output](){int tmp = 0; for (auto &elem: output){tmp += elem.size();}return tmp;}()), brainCycle(brainCycle), mutationIterator(-1) {
+NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t brainCycle): NeuralNetwork([input](){int tmp = 0; for (auto &elem: input){tmp += elem.size();}return tmp;}(), [output](){int tmp = 0; for (auto &elem: output){tmp += elem.size();}return tmp;}()), brainCycle(brainCycle), mutationIterator(-1) {
+	std::uniform_real_distribution<> weight(-WEIGHT, WEIGHT);
 	zones.reserve(input.size() + 1);
 	for (size_t i = 0; i < input.size(); ++i) {
 		zones.emplace_back(std::make_shared<Zone>(i));
@@ -18,6 +18,9 @@ NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t b
 	zones.emplace_back(std::make_shared<Zone>(-1));
 	zones.back()->nodes.emplace(inputs.size() + output.size() + input.size(), createNoIDNode(inputs.size() + output.size() + input.size()));
 	//TODO link les zones entre elles -> les zone input ver la zone reflexion
+	for (size_t i = 0; i < input.size(); ++i) {
+		createConnection(zones[i]->nodes.begin()->second, zones[3]->nodes.begin()->second)->weight = weight(gen);
+	}
 
 	_inCloseness.resize(input.size());
 	for (int i = 0; i < input.size(); ++i) {
@@ -30,13 +33,13 @@ NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t b
 	for (int i = 0; i < output.size(); ++i) {
 		_outCloseness[i].reserve(output[i].size());
 		for (auto &elem : output[i]) {
-			_outCloseness[i].emplace_back(_nodes[input.size() + BIAS + elem]);
+			_outCloseness[i].emplace_back(_nodes[this->inputs.size() + BIAS + elem]);
 		}
 	}
 }
 
 void NEATERNeuralNetwork::update() {
-	for (int i = 0; i < brainCycle && !toProcess.empty(); ++i) {
+	for (int y = 0; y < brainCycle && !toProcess.empty(); ++y) {
 
 		auto tmp = toProcess.size();
 		for (size_t i = 0; i < tmp && !toProcess.empty(); ++i) {
@@ -66,6 +69,24 @@ void NEATERNeuralNetwork::crossover(std::shared_ptr<NEATERNeuralNetwork> parent)
 			elem->connections.emplace(connection.first, _connections[connection.first]);
 	}
 
+	brainCycle = parent->brainCycle;
+
+	_inCloseness.resize(parent->_inCloseness.size());
+	for (int i = 0; i < parent->_inCloseness.size(); ++i) {
+		_inCloseness[i].reserve(parent->_inCloseness[i].size());
+		for (auto &elem : parent->_inCloseness[i]) {
+			_inCloseness[i].emplace_back(_nodes[elem->ID]);
+		}
+	}
+	_outCloseness.resize(parent->_outCloseness.size());
+	for (int i = 0; i < parent->_outCloseness.size(); ++i) {
+		_outCloseness[i].reserve(parent->_outCloseness[i].size());
+		for (auto &elem : parent->_outCloseness[i]) {
+			if (elem->ID < 24)
+				std::cout << "je suis une petit foret" << std::endl;
+			_outCloseness[i].emplace_back(_nodes[elem->ID]);
+		}
+	}
 }
 
 void NEATERNeuralNetwork::mutation() {
@@ -89,7 +110,6 @@ void NEATERNeuralNetwork::mutation() {
 		float selected = selection(gen);
 		for (float search = 0.f; search + it->deltaFitness > selected; ++it, selected += it->deltaFitness);
 
-		//TODO do something if the mutation can't be done ex: put the iterator to -1 and don't take it in count
 		execMutation(*it);
 
 	} else {
@@ -105,32 +125,32 @@ void NEATERNeuralNetwork::mutation() {
 
 			if (zones[tmp]->inputZone != -1) {
 				if (type(gen)) {
-					std::get<0>(std::get<0>(mutation.mutation)) = (Zones)((int)(Zones::UnusedInput) + type(gen));
-					std::get<1>(std::get<0>(mutation.mutation)) = zones[tmp]->inputZone;
+					mutation.mutation.first.first = (Zones)((int)(Zones::UnusedInput) + type(gen));
+					mutation.mutation.first.second = zones[tmp]->inputZone;
 
-					std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<1>(mutation.mutation)) = tmp;
+					mutation.mutation.second.first = Zones::Zone;
+					mutation.mutation.second.second = tmp;
 
 				} else {
-					std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<0>(mutation.mutation)) = selec(gen);
+					mutation.mutation.first.first = Zones::Zone;
+					mutation.mutation.first.second = selec(gen);
 
-					std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<1>(mutation.mutation)) = tmp;
+					mutation.mutation.second.first = Zones::Zone;
+					mutation.mutation.second.second = tmp;
 				}
 			} else {
 				if (type(gen)) {
-					std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<0>(mutation.mutation)) = tmp;
+					mutation.mutation.first.first = Zones::Zone;
+					mutation.mutation.first.second = tmp;
 
-					std::get<0>(std::get<1>(mutation.mutation)) = (Zones)((int)(Zones::UnusedOutput) + type(gen));
-					std::get<1>(std::get<1>(mutation.mutation)) = 0;
+					mutation.mutation.second.first = (Zones)((int)(Zones::UnusedOutput) + type(gen));
+					mutation.mutation.second.second = 0;
 				} else {
-					std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<0>(mutation.mutation)) = selec(gen);
+					mutation.mutation.first.first = Zones::Zone;
+					mutation.mutation.first.second = selec(gen);
 
-					std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-					std::get<1>(std::get<1>(mutation.mutation)) = tmp;
+					mutation.mutation.second.first = Zones::Zone;
+					mutation.mutation.second.second = tmp;
 				}
 			}
 		}
@@ -142,7 +162,7 @@ void NEATERNeuralNetwork::execMutation(const MutationType &mut) {
 	bool mutationSuccess;
 	switch (mut.type) {
 		case Mutation::InterZonesConnection:
-			mutationSuccess = mutationInterZones(std::get<0>(mut.mutation), std::get<1>(mut.mutation));
+			mutationSuccess = mutationInterZones(mut.mutation.first, mut.mutation.second);
 			break;
 		case Mutation::ZoneNode:
 			mutationSuccess = mutationZoneNode(mut.idZone);
@@ -158,64 +178,63 @@ void NEATERNeuralNetwork::execMutation(const MutationType &mut) {
 			std::cout << ERROR("Mutation Type Undefined") << ": NEATERNeuralNetwork::execMutation" << std::endl;
 	}
 	int size = 0;
-	for (auto &elem : globalMutations) {
+	for (auto &elem : globalMutations)
 		size++;
-	}
 	mutationIterator = size;
 	globalMutations.emplace_back(mut);
-	(globalMutations.end()--)->deltaFitness = (mutationSuccess ? fitness : -1);
+	globalMutations.back().deltaFitness = (mutationSuccess ? fitness : -1);
 }
 
-bool NEATERNeuralNetwork::mutationInterZones(std::tuple<Zones, int> fromZone, std::tuple<Zones, int> toZone) {
+bool NEATERNeuralNetwork::mutationInterZones(std::pair<Zones, int> fromZone, std::pair<Zones, int> toZone) {
 	std::shared_ptr<Node> from;
 	std::shared_ptr<Node> to;
 
-	if (std::get<0>(fromZone) == Zones::UnusedInput) {
+	if (fromZone.first == Zones::UnusedInput) {
 		std::vector<std::shared_ptr<Node>> queue;
 		queue.reserve(inputs.size());
-		for (auto &elem: _inCloseness[std::get<1>(fromZone)])
+		for (auto &elem: _inCloseness[fromZone.second])
 			if (elem->connectionTo.empty())
 				queue.push_back(elem);
 		if (queue.empty())
 			return false;
 		std::uniform_int_distribution<> selec(0, queue.size() - 1);
 		from = queue[selec(gen)];
-	} else if (std::get<0>(fromZone) == Zones::UsedInput) {
+	} else if (fromZone.first == Zones::UsedInput) {
 		std::vector<std::shared_ptr<Node>> queue;
 		queue.reserve(inputs.size());
-		for (auto &elem:  _inCloseness[std::get<1>(fromZone)])
+		for (auto &elem:  _inCloseness[fromZone.second])
 			if (!elem->connectionTo.empty())
 				queue.push_back(elem);
 		if (queue.empty())
 			return false;
 		std::uniform_int_distribution<> selec(0, queue.size() - 1);
 		from = queue[selec(gen)];
-	} else if (std::get<0>(fromZone) == Zones::Zone) {
-		from = zones[std::get<1>(fromZone)]->selectRandomNode();
+	} else if (fromZone.first == Zones::Zone) {
+		from = zones[fromZone.second]->selectRandomNode();
 	}
 
-	if (std::get<0>(toZone) == Zones::UnusedOutput) {
+	if (toZone.first == Zones::UnusedOutput) {
 		std::vector<std::shared_ptr<Node>> queue;
 		queue.reserve(outputs.size());
-		for (auto &elem:  _outCloseness[std::get<1>(toZone)])
+		for (auto &elem:  _outCloseness[toZone.second])
 			if (elem->connectionFrom.empty())
 				queue.push_back(elem);
 		if (queue.empty())
 			return false;
 		std::uniform_int_distribution<> selec(0, queue.size() - 1);
 		to = queue[selec(gen)];
-	} else if (std::get<0>(toZone) == Zones::UsedOutput) {
+	} else if (toZone.first == Zones::UsedOutput) {
 		std::vector<std::shared_ptr<Node>> queue;
 		queue.reserve(outputs.size());
-		for (auto &elem: _outCloseness[std::get<1>(toZone)])
+		for (auto &elem: _outCloseness[toZone.second])
 			if (!elem->connectionFrom.empty())
 				queue.push_back(elem);
 		if (queue.empty())
 			return false;
 		std::uniform_int_distribution<> selec(0, queue.size() - 1);
 		to = queue[selec(gen)];
-	} else if (std::get<0>(toZone) == Zones::Zone) {
-		to = zones[std::get<1>(toZone)]->selectRandomNode();
+	} else if (toZone.first == Zones::Zone) {
+		to = zones[toZone.second]->selectRandomNode();
 	}
 
 	createConnection(from, to);
@@ -233,6 +252,7 @@ bool NEATERNeuralNetwork::mutationZoneNode(int id) {
 }
 
 bool NEATERNeuralNetwork::mutationZoneConnection(int id) {
+	std::uniform_real_distribution<> weight(-WEIGHT, WEIGHT);
 	if (zones[id]->nodes.size() < 2)
 		return false;
 	auto &zone = zones[id];
@@ -243,7 +263,9 @@ bool NEATERNeuralNetwork::mutationZoneConnection(int id) {
 		for (auto &elem : from->connectionTo)
 			exist = exist || (to == elem->to);
 		if (!exist) {
-			zone->createConnection(createConnection(from, to));
+			auto connection = createConnection(from, to);
+			connection->weight = weight(gen);
+			zone->createConnection(connection);
 			return true;
 		}
 	}
@@ -259,9 +281,30 @@ bool NEATERNeuralNetwork::mutationZoneWeight(int id) {
 	std::uniform_real_distribution<> weightTune(-WEIGHT_TUNE, WEIGHT_TUNE);
 
 	if (random(gen) > 0.7)
-		zones[id]->connections[selec(gen)]->weight = weight(gen);
+		std::next(zones[id]->connections.begin(), selec(gen))->second->weight = weight(gen);
 	else
-		zones[id]->connections[selec(gen)]->weight += weightTune(gen);
+		std::next(zones[id]->connections.begin(), selec(gen))->second->weight += weightTune(gen);
 
 	return true;
+}
+
+void NEATERNeuralNetwork::createRandomConnections() {
+	std::uniform_real_distribution<> weight(-WEIGHT, WEIGHT);
+	for (auto &zone: zones) {
+		if (zone->inputZone == -1) {
+			std::uniform_int_distribution<> selection(0, zone->nodes.size() - 1);
+			auto from = std::next(zone->nodes.begin(), selection(gen))->second;
+			selection = std::uniform_int_distribution<>(0, _outCloseness[0].size() - 1);
+			auto to = *std::next(_outCloseness[0].begin(), selection(gen));
+
+			createConnection(from, to)->weight = weight(gen);
+		} else {
+			std::uniform_int_distribution<> selection(0, zone->nodes.size() - 1);
+			auto to = std::next(zone->nodes.begin(), selection(gen))->second;
+			selection = std::uniform_int_distribution<>(0, _inCloseness[zone->inputZone].size() - 1);
+			auto from = *std::next(_inCloseness[zone->inputZone].begin(), selection(gen));
+
+			createConnection(from, to)->weight = weight(gen);
+		}
+	}
 }

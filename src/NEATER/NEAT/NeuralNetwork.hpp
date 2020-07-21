@@ -17,8 +17,8 @@
 #include "src/NEATER/Zone.hpp"
 #include "IOANN.hpp"
 
-static std::vector<std::tuple<int, int>> innovationNodes;
-static std::vector<std::tuple<int, int>> innovationConnection;
+static std::vector<std::pair<int, int>> innovationNodes;
+static std::vector<std::pair<int, int>> innovationConnection;
 
 
 class NeuralNetwork {

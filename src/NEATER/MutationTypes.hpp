@@ -26,6 +26,10 @@ struct MutationType{
     float deltaFitness;
     Mutation type;
 
-    std::tuple<std::tuple<Zones, int>, std::tuple<Zones, int>> mutation;
+    std::pair<std::pair<Zones, int>, std::pair<Zones, int>> mutation;
     int idZone;
+
+public:
+    bool operator == (const MutationType& s) const { return deltaFitness < 2.0f; }
+    bool operator != (const MutationType& s) const { return !operator==(s); }
 };

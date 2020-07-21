@@ -228,7 +228,7 @@ std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toS
 
 	std::shared_ptr<Node> newNode;
 	for (int i = 0; i < innovationNodes.size(); ++i) {
-		if (std::get<0>(innovationNodes[i]) == toSplit->from->ID && std::get<1>(innovationNodes[i]) == toSplit->to->ID) {
+		if (innovationNodes[i].first == toSplit->from->ID && innovationNodes[i].second == toSplit->to->ID) {
 			newNode = createNoIDNode(i + MAX_SIZE_INPUT);
 			break;
 		}
@@ -236,7 +236,7 @@ std::shared_ptr<Node> NeuralNetwork::createNode(std::shared_ptr<Connection> &toS
 
 	if (!newNode) {
 		newNode = createNode();
-		innovationNodes.emplace_back(std::make_tuple(toSplit->from->ID, toSplit->to->ID));
+		innovationNodes.emplace_back(std::pair<int, int>(toSplit->from->ID, toSplit->to->ID));
 	}
 	auto connec1 = createConnection(toSplit->from, newNode);
 	auto connec2 = createConnection(newNode, toSplit->to);
@@ -253,7 +253,7 @@ std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node
 //	static size_t id = 0;
 
 	for (int i = 0; i < innovationConnection.size(); ++i) {
-		if (std::get<0>(innovationConnection[i]) == from->ID && std::get<1>(innovationConnection[i]) == to->ID) {
+		if (innovationConnection[i].first == from->ID && innovationConnection[i].second == to->ID) {
 			return createNoIDConnection(i, from, to);
 		}
 	}
@@ -266,7 +266,7 @@ std::shared_ptr<Connection> NeuralNetwork::createConnection(std::shared_ptr<Node
 	tmp->from = from;
 	tmp->to = to;
 //	std::cout << INFO("NEW CONNECTION") << std::endl;
-	innovationConnection.emplace_back(std::make_tuple(from->ID, to->ID));
+	innovationConnection.emplace_back(std::pair<int, int>(from->ID, to->ID));
 
 //	id++;
 	return tmp;

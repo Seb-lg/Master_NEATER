@@ -58,6 +58,7 @@ void NEATERGenus::update() {
 		}
 	}
 
+	globalMutations.remove(MutationType());
 	int size = 0;
 	for (auto &elem: globalMutations)
 		++size;

@@ -20,9 +20,11 @@ public:
     void mutation() override;
     void execMutation(const MutationType &mut);
 
-    bool mutationInterZones(std::tuple<Zones, int>, std::tuple<Zones, int>);
+    bool mutationInterZones(std::pair<Zones, int>, std::pair<Zones, int>);
     bool mutationZoneNode(int);
     bool mutationZoneConnection(int);
+
+    void createRandomConnections();
 
 public:
     size_t brainCycle;
