@@ -54,14 +54,19 @@ void NEATERGenus::update() {
 				graphic->draw(ale[i].map, ale[i].width, species[i]->color);
 			}
 			graphic->update();
-			std::this_thread::sleep_for(std::chrono::microseconds(1000000 / 144));
+			std::this_thread::sleep_for(std::chrono::microseconds(1000000 / 120));
 		}
 	}
 
 	globalMutations.remove(MutationType());
 	int size = 0;
-	for (auto &elem: globalMutations)
+	for (auto &elem: globalMutations) {
 		++size;
+	}
+	if (size > NB_MUT_USE) {
+		globalMutations.erase(globalMutations.begin(), std::next(globalMutations.begin(), size - 1  - NB_MUT_USE));
+		size = NB_MUT_USE;
+	}
 	lastGeneration = size;
 	epoch++;
 }

@@ -7,7 +7,7 @@
 
 SnakeWrapper::SnakeWrapper(int width, int height, ulong seed, bool graph) : map(width * height, ' '), width(width),
 									    height(height), graph(graph), fitness(1),
-									    seed(seed) {
+									    seed(seed), changedDirection(false) {
 	out.resize(8 * 3, 0.0f);
 	gen.seed(seed);
 	dis = std::uniform_int_distribution<int>(0, width * height);
@@ -36,6 +36,8 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 
 	int x = *snake.begin() % width;
 	int y = *snake.begin() / width;
+	if (!changedDirection)
+		changedDirection = changedDirection ||  direction != Direction::Up;
 	switch (direction) {
 		case Direction::Up:
 			--y;
@@ -61,7 +63,7 @@ float SnakeWrapper::sendAction(std::vector<float> inputs) {
 		newApple();
 		++size;
 	} else if (map[x + y * width] == 'S' || y >= height || y < 0 || x >= width || x < 0 || food < 0) {
-		return size + log(fitness/100);
+		return (changedDirection? size + log(fitness/100) : 0);
 		if(size < 10) {
 			fitness = floor(fitness * fitness) * pow(2,size);
 		} else {

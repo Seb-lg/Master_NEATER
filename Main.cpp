@@ -4,6 +4,7 @@
 
 
 #include <src/NEATER/NEATERGenus.hpp>
+#include <src/NEATER/NEAT/Genus.hpp>
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -52,36 +53,15 @@ int main(int ac, char **av) {
 	mutation.mutation.second.second = 0;
 	globalMutations.emplace_back(mutation);
 
-	/*std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<0>(mutation.mutation)) = 0;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 3;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<0>(mutation.mutation)) = 1;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 3;
-	globalMutations.emplace_back(mutation);
-
-	std::get<0>(std::get<0>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<0>(mutation.mutation)) = 2;
-
-	std::get<0>(std::get<1>(mutation.mutation)) = Zones::Zone;
-	std::get<1>(std::get<1>(mutation.mutation)) = 3;
-	globalMutations.emplace_back(mutation);*/
-
 
 	NEATERGenus genus(in, out, 20, 20, 2000, true);
+//	Genus genus(24, 4, 20, 2000, false);
 
-	while (genus.epoch < 15) {
+	while (genus.epoch < 50) {
 		genus.update();
 		genus.speciesUpdate();
 	}
-
-
+	std::cout << std::endl;
 	return 0;
 }
 

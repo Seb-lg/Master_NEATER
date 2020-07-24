@@ -3,6 +3,9 @@ cmake-build-release
 .idea
 Arcade-Learning-Environment
 
+*.tmp
+*.png
+
 # Prerequisites
 *.d
 

@@ -34,6 +34,8 @@ public:
 	int food;
 	int size;
 
+	bool changedDirection;
+
 	std::mt19937 gen;
 	std::uniform_int_distribution<> dis;
 

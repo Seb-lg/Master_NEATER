@@ -17,7 +17,6 @@ NEATERNeuralNetwork::NEATERNeuralNetwork(ioTable input, ioTable output, size_t b
 	}
 	zones.emplace_back(std::make_shared<Zone>(-1));
 	zones.back()->nodes.emplace(inputs.size() + output.size() + input.size(), createNoIDNode(inputs.size() + output.size() + input.size()));
-	//TODO link les zones entre elles -> les zone input ver la zone reflexion
 	for (size_t i = 0; i < input.size(); ++i) {
 		createConnection(zones[i]->nodes.begin()->second, zones[3]->nodes.begin()->second)->weight = weight(gen);
 	}
@@ -71,6 +70,7 @@ void NEATERNeuralNetwork::crossover(std::shared_ptr<NEATERNeuralNetwork> parent)
 
 	brainCycle = parent->brainCycle;
 
+	_inCloseness.clear();
 	_inCloseness.resize(parent->_inCloseness.size());
 	for (int i = 0; i < parent->_inCloseness.size(); ++i) {
 		_inCloseness[i].reserve(parent->_inCloseness[i].size());
@@ -78,12 +78,11 @@ void NEATERNeuralNetwork::crossover(std::shared_ptr<NEATERNeuralNetwork> parent)
 			_inCloseness[i].emplace_back(_nodes[elem->ID]);
 		}
 	}
+	_outCloseness.clear();
 	_outCloseness.resize(parent->_outCloseness.size());
 	for (int i = 0; i < parent->_outCloseness.size(); ++i) {
 		_outCloseness[i].reserve(parent->_outCloseness[i].size());
 		for (auto &elem : parent->_outCloseness[i]) {
-			if (elem->ID < 24)
-				std::cout << "je suis une petit foret" << std::endl;
 			_outCloseness[i].emplace_back(_nodes[elem->ID]);
 		}
 	}
