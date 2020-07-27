@@ -36,5 +36,7 @@ public:
     int mutationIterator;
 
     bool mutationZoneWeight(int zone);
+
+    bool mutationInterZonesWeight();
 };
 

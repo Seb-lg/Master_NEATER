@@ -15,6 +15,8 @@ void Zone::createNode(std::shared_ptr<Node> newNode) {
 }
 
 void Zone::createConnection(std::shared_ptr<Connection> newConnection) {
+	if (!newConnection)
+		std::cout << "yess" << std::endl;
 	connections[newConnection->ID] = newConnection;
 }
 
@@ -35,7 +37,7 @@ std::shared_ptr<Connection> Zone::findConnectionToSplit() {
 	}
 	if (!connections.empty()) {
 		std::uniform_int_distribution<> selec(0, connections.size() - 1);
-		return connections[selec(gen)];
+		return std::next(connections.begin(), selec(gen))->second;
 	} else {
 		std::list<std::shared_ptr<Connection>> queue;
 		for (auto &elem : nodes) {

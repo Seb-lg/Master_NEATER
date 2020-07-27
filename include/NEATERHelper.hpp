@@ -11,7 +11,7 @@ extern std::list<MutationType> globalMutations;
 extern int lastGeneration;
 
 #define USE_PREVMUTATION 0.7f
-#define NB_MUT_USE 300
+#define NB_MUT_USE 1500
 #define THRESHOLD_HISTO 1.0f
 
 #define NB_MUTLOOP 10

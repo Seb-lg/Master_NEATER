@@ -89,7 +89,7 @@ void NEATERNeuralNetwork::crossover(std::shared_ptr<NEATERNeuralNetwork> parent)
 }
 
 void NEATERNeuralNetwork::mutation() {
-	std::uniform_int_distribution<> dis(0, 3);
+	std::uniform_int_distribution<> dis(0, 4);
 	std::uniform_real_distribution<float> prct(0.0, 1.0);
 
 	if (prct(gen) < USE_PREVMUTATION && lastGeneration != 0) {
@@ -171,6 +171,9 @@ void NEATERNeuralNetwork::execMutation(const MutationType &mut) {
 			break;
 		case Mutation::ZoneWeight:
 			mutationSuccess = mutationZoneWeight(mut.idZone);
+			break;
+		case Mutation::InterZonesConnectionWeight:
+			mutationSuccess = mutationInterZonesWeight();
 			break;
 		default:
 			mutationSuccess = false;
@@ -306,4 +309,24 @@ void NEATERNeuralNetwork::createRandomConnections() {
 			createConnection(from, to)->weight = weight(gen);
 		}
 	}
+}
+
+bool NEATERNeuralNetwork::mutationInterZonesWeight() {
+	if (_connections.empty())
+		return false;
+	std::list<std::shared_ptr<Connection>> queue;
+	for (auto &elem : _connections) {
+		bool inZone = false;
+		for (auto &zone : zones)
+			if (zone->connections.find(elem.second->ID) != zone->connections.end())
+				inZone = true;
+		if (!inZone)
+			queue.emplace_back(elem.second);
+	}
+	if (queue.empty())
+		return false;
+	std::uniform_int_distribution<> selec(0, queue.size() - 1);
+	std::uniform_real_distribution<> weight(-WEIGHT, WEIGHT);
+	(*std::next(queue.begin(), selec(gen)))->weight = weight(gen);
+	return true;
 }

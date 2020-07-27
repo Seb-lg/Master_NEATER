@@ -23,10 +23,15 @@ void NEATERGenus::update() {
 	for (auto &specie : species)
 		specie->update(seed);
 
-	std::cout << INFO("Generation ") << epoch << std::endl;
-	for (auto const &elem : species)
-		std::cout << INFO("\t\tfitness: ")
-			  << elem->population[0]->fitness << std::endl;
+//	std::cout << INFO("Generation ") << epoch << std::endl;
+	float tmp = 0;
+	for (auto const &elem : species) {
+//		std::cout << INFO("\t\tfitness: ")
+//			<< elem->population[0]->fitness << std::endl;
+		if (elem->population[0]->fitness > tmp)
+			tmp = elem->population[0]->fitness;
+	}
+	std::cout << tmp << ", " << std::flush;
 
 	if (graphic) {
 		int finished = 0;

@@ -54,10 +54,11 @@ int main(int ac, char **av) {
 	globalMutations.emplace_back(mutation);
 
 
-	NEATERGenus genus(in, out, 20, 20, 2000, true);
+	NEATERGenus genus(in, out, 20, 20, 2000, false);
 //	Genus genus(24, 4, 20, 2000, false);
 
-	while (genus.epoch < 50) {
+	std::cout << "-, " << std::flush;
+	while (genus.epoch < 100) {
 		genus.update();
 		genus.speciesUpdate();
 	}

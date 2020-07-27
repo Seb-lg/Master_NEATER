@@ -10,7 +10,8 @@ enum class Mutation {
     InterZonesConnection = 0,
     ZoneNode = 1,
     ZoneConnection = 2,
-    ZoneWeight = 3
+    ZoneWeight = 3,
+    InterZonesConnectionWeight = 4
 };
 
 enum class Zones {
